@@ -11,13 +11,16 @@
 	<link rel="stylesheet" href="./assets/style.css">
 </head>
 <body>
+<div class="edit-banner">
+	<span aria-hidden="true">✎</span> Mode édition
+</div>
 <header>
 	<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 	<nav>
 		<ul>
 			<li>projets</li>
 			<li>contact</li>
-			<li>login</li>
+			<li class="active"><a href="login.html">logout</a></li>
 			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 		</ul>
 	</nav>
@@ -35,7 +38,10 @@
 		</article>
 	</section>
 	<section id="portfolio">
-		<h2>Mes Projets</h2>
+		<div class="portfolio-heading">
+			<h2>Mes Projets</h2>
+			<button class="edit-projects" type="button"><span aria-hidden="true">✎</span> modifier</button>
+		</div>
 		<div class="gallery">
 			<figure>
 				<img src="assets/images/abajour-tahina.png" alt="Abajour Tahina">
