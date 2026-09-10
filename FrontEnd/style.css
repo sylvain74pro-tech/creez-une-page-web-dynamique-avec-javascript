@@ -152,6 +152,83 @@ li:hover {
 	font: inherit;
 	cursor: pointer;
 	padding: 0;
+	color: inherit;
+	text-decoration: none;
+}
+
+/* Fenêtre Galerie photo, ouverte avec le lien #gallery-modal. */
+.modal {
+	display: none;
+	position: fixed;
+	inset: 0;
+	z-index: 10;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	box-sizing: border-box;
+	background: rgba(0, 0, 0, 0.3);
+}
+.modal:target { display: flex; }
+.modal-content {
+	position: relative;
+	width: 630px;
+	max-width: 100%;
+	min-height: 620px;
+	box-sizing: border-box;
+	padding: 60px 105px 45px;
+	border-radius: 10px;
+	background: #fff;
+}
+.modal-content h2 {
+	margin-bottom: 46px;
+	font-family: 'Work Sans';
+	font-size: 26px;
+	font-weight: 400;
+	text-align: center;
+	color: #000;
+}
+.modal-close {
+	position: absolute;
+	top: 24px;
+	right: 28px;
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 1;
+	color: #000;
+	text-decoration: none;
+}
+.modal-gallery {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 28px 8px;
+	padding-bottom: 65px;
+	border-bottom: 1px solid #b3b3b3;
+}
+.modal-gallery figure { position: relative; }
+.modal-gallery img { display: block; width: 100%; aspect-ratio: 1 / 1.25; object-fit: cover; }
+.modal-gallery button {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	padding: 2px 4px;
+	border: 0;
+	border-radius: 2px;
+	background: #000;
+	color: #fff;
+	font-size: 10px;
+	cursor: pointer;
+}
+.modal-actions { padding-top: 38px; text-align: center; }
+.modal-actions button {
+	width: 237px;
+	height: 36px;
+	border: 0;
+	border-radius: 60px;
+	font-family: 'Syne';
+	font-weight: 700;
+	color: #fff;
+	background: #1d6154;
+	cursor: pointer;
 }
 .gallery {
 	width: 100%;
@@ -260,4 +337,6 @@ nav a {
 	header { margin: 30px 0; }
 	#introduction { flex-direction: column; gap: 25px; }
 	.gallery { grid-template-columns: 1fr 1fr; }
+	.modal-content { min-height: 0; padding: 50px 30px 35px; }
+	.modal-gallery { gap: 14px 6px; padding-bottom: 35px; }
 }

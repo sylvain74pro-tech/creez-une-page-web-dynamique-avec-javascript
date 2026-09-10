@@ -40,7 +40,7 @@
 	<section id="portfolio">
 		<div class="portfolio-heading">
 			<h2>Mes Projets</h2>
-			<button class="edit-projects" type="button"><span aria-hidden="true">✎</span> modifier</button>
+			<a class="edit-projects" href="#gallery-modal"><span aria-hidden="true">✎</span> modifier</a>
 		</div>
 		<div class="gallery">
 			<figure>
@@ -103,6 +103,27 @@
 		</form>
 	</section>
 </main>
+
+<div class="modal" id="gallery-modal" role="dialog" aria-modal="true" aria-labelledby="gallery-modal-title">
+	<div class="modal-content">
+		<a class="modal-close" href="#portfolio" aria-label="Fermer la galerie">×</a>
+		<h2 id="gallery-modal-title">Galerie photo</h2>
+		<div class="modal-gallery">
+			<figure><img src="assets/images/abajour-tahina.png" alt="Abajour Tahina"><button type="button" aria-label="Supprimer Abajour Tahina">▣</button></figure>
+			<figure><img src="assets/images/appartement-paris-v.png" alt="Appartement Paris V"><button type="button" aria-label="Supprimer Appartement Paris V">▣</button></figure>
+			<figure><img src="assets/images/restaurant-sushisen-londres.png" alt="Restaurant Sushisen - Londres"><button type="button" aria-label="Supprimer Restaurant Sushisen - Londres">▣</button></figure>
+			<figure><img src="assets/images/la-balisiere.png" alt="Villa La Balisiere"><button type="button" aria-label="Supprimer Villa La Balisiere">▣</button></figure>
+			<figure><img src="assets/images/structures-thermopolis.png" alt="Structures Thermopolis"><button type="button" aria-label="Supprimer Structures Thermopolis">▣</button></figure>
+			<figure><img src="assets/images/appartement-paris-x.png" alt="Appartement Paris X"><button type="button" aria-label="Supprimer Appartement Paris X">▣</button></figure>
+			<figure><img src="assets/images/le-coteau-cassis.png" alt="Pavillon Le coteau"><button type="button" aria-label="Supprimer Pavillon Le coteau">▣</button></figure>
+			<figure><img src="assets/images/villa-ferneze.png" alt="Villa Ferneze"><button type="button" aria-label="Supprimer Villa Ferneze">▣</button></figure>
+			<figure><img src="assets/images/appartement-paris-xviii.png" alt="Appartement Paris XVIII"><button type="button" aria-label="Supprimer Appartement Paris XVIII">▣</button></figure>
+			<figure><img src="assets/images/bar-lullaby-paris.png" alt="Bar Lullaby"><button type="button" aria-label="Supprimer Bar Lullaby">▣</button></figure>
+			<figure><img src="assets/images/hotel-first-arte-new-delhi.png" alt="Hotel First Arte"><button type="button" aria-label="Supprimer Hotel First Arte">▣</button></figure>
+		</div>
+		<div class="modal-actions"><button type="button">Ajouter une photo</button></div>
+	</div>
+</div>
 
 <footer>
 	<nav>
