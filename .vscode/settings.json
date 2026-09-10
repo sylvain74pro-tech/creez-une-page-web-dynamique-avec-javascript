@@ -1,4 +1,3 @@
-{
-  "liveServer.settings.port": 5500,
-  "liveServer.settings.root": "/FrontEnd"
+{ 
+    "liveServer.settings.ignoreFiles": ["Backend/**"] 
 }
