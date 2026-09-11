@@ -1,54 +1,16 @@
-const worksApiUrl = "http://localhost:5678/api/works";
+const filterButtons = document.querySelectorAll('.filter-button');
+const projectCards = document.querySelectorAll('.gallery figure');
 
-function updateEditingMode() {
-    const token = localStorage.getItem("token");
-    const editBanner = document.querySelector(".edit-banner");
-    const editProjects = document.querySelector("#edit-projects");
-    const loginLink = document.querySelector("#login-link");
+filterButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    const selectedCategory = button.dataset.category;
 
-    if (!token) return;
+    filterButtons.forEach((item) => item.classList.remove('is-active'));
+    button.classList.add('is-active');
 
-    editBanner.hidden = false;
-    editProjects.hidden = false;
-    loginLink.textContent = "logout";
-    loginLink.href = "#";
-    loginLink.addEventListener("click", (event) => {
-        event.preventDefault();
-        localStorage.removeItem("token");
-        window.location.reload();
+    projectCards.forEach((card) => {
+      const shouldShow = selectedCategory === 'all' || card.dataset.category === selectedCategory;
+      card.hidden = !shouldShow;
     });
-}
-
-function displayWorks(works) {
-    const gallery = document.querySelector(".gallery");
-    gallery.innerHTML = "";
-
-    works.forEach((work) => {
-        const figure = document.createElement("figure");
-        const image = document.createElement("img");
-        const caption = document.createElement("figcaption");
-
-        image.src = work.imageUrl;
-        image.alt = work.title;
-        caption.textContent = work.title;
-
-        figure.append(image, caption);
-        gallery.appendChild(figure);
-    });
-}
-
-async function loadWorks() {
-    try {
-        const response = await fetch(worksApiUrl);
-        if (!response.ok) {
-            throw new Error(`Erreur API : ${response.status}`);
-        }
-
-        displayWorks(await response.json());
-    } catch (error) {
-        console.error("Impossible de charger les projets.", error);
-    }
-}
-
-updateEditingMode();
-loadWorks();
+  });
+});

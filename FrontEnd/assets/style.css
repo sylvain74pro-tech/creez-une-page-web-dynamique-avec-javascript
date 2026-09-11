@@ -59,7 +59,7 @@ body {
 	margin-left: calc(50% - 50vw);
 	height: 59px;
 	box-sizing: border-box;
-	display: flex;
+	display: none;
 	align-items: center;
 	justify-content: center;
 	gap: 10px;
@@ -146,6 +146,30 @@ li:hover {
 	gap: 30px;
 }
 .portfolio-heading h2 { margin-bottom: 1em; }
+.filter-buttons {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin: 24px 0 50px;
+}
+.filter-button {
+	min-height: 37px;
+	padding: 0 16px;
+	border: 1px solid #1D6154;
+	border-radius: 60px;
+	background: #fff;
+	font-family: 'Syne';
+	font-size: 14px;
+	font-weight: 700;
+	color: #1D6154;
+	cursor: pointer;
+}
+.filter-button:hover,
+.filter-button.is-active {
+	background: #1D6154;
+	color: #fff;
+}
 .edit-projects {
 	border: 0;
 	background: transparent;
@@ -310,6 +334,9 @@ li:hover {
 	grid-column-gap: 20px;
 	grid-row-gap: 20px;
 }
+
+.gallery figure { margin: 0; }
+.gallery figcaption { margin-top: 6px; font-size: 13px; }
 
 .gallery img {
 	width: 100%;
