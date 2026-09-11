@@ -7,6 +7,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 	<meta name="description" content="">
 	<link rel="stylesheet" href="./assets/style.css">
 </head>
@@ -18,8 +19,8 @@
 	<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 	<nav>
 		<ul>
-			<li>projets</li>
-			<li>contact</li>
+			<li><a href="#portfolio">projets</a></li>
+			<li><a href="#contact">contact</a></li>
 			<li class="active"><a href="login.html">logout</a></li>
 			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 		</ul>
@@ -40,53 +41,20 @@
 	<section id="portfolio">
 		<div class="portfolio-heading">
 			<h2>Mes Projets</h2>
-			<a class="edit-projects" href="#gallery-modal"><span aria-hidden="true">✎</span> modifier</a>
+			<a class="edit-projects" href="#gallery-modal"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i> modifier</a>
 		</div>
 		<div class="gallery">
-			<figure>
-				<img src="assets/images/abajour-tahina.png" alt="Abajour Tahina">
-				<figcaption>Abajour Tahina</figcaption>
-			</figure>
-			<figure>
-				<img src="assets/images/appartement-paris-v.png" alt="Appartement Paris V">
-				<figcaption>Appartement Paris V</figcaption>
-			</figure>
-			<figure>
-				<img src="assets/images/restaurant-sushisen-londres.png" alt="Restaurant Sushisen - Londres">
-				<figcaption>Restaurant Sushisen - Londres</figcaption>
-			</figure>
-			<figure>
-				<img src="assets/images/la-balisiere.png" alt="Villa “La Balisiere” - Port Louis">
-				<figcaption>Villa “La Balisiere” - Port Louis</figcaption>
-			</figure>
-			<figure>
-				<img src="assets/images/structures-thermopolis.png" alt="Structures Thermopolis">
-				<figcaption>Structures Thermopolis</figcaption>
-			</figure>
-			<figure>
-				<img src="assets/images/appartement-paris-x.png" alt="Appartement Paris X">
-				<figcaption>Appartement Paris X</figcaption>
-			</figure>
-			<figure>
-				<img src="assets/images/le-coteau-cassis.png" alt="Pavillon “Le coteau” - Cassis">
-				<figcaption>Pavillon “Le coteau” - Cassis</figcaption>
-			</figure>
-			<figure>
-				<img src="assets/images/villa-ferneze.png" alt="Villa Ferneze - Isola d’Elba">
-				<figcaption>Villa Ferneze - Isola d’Elba</figcaption>
-			</figure>
-			<figure>
-				<img src="assets/images/appartement-paris-xviii.png" alt="Appartement Paris XVIII">
-				<figcaption>Appartement Paris XVIII</figcaption>
-			</figure>
-			<figure>
-				<img src="assets/images/bar-lullaby-paris.png" alt="Bar “Lullaby” - Paris">
-				<figcaption>Bar “Lullaby” - Paris</figcaption>
-			</figure>
-			<figure>
-				<img src="assets/images/hotel-first-arte-new-delhi.png" alt="Hotel First Arte - New Delhi">
-				<figcaption>Hotel First Arte - New Delhi</figcaption>
-			</figure>
+			<figure><img src="./assets/images/abajour-tahina.png" alt="Abajour Tahina"><figcaption>Abajour Tahina</figcaption></figure>
+			<figure><img src="./assets/images/appartement-paris-v.png" alt="Appartement Paris V"><figcaption>Appartement Paris V</figcaption></figure>
+			<figure><img src="./assets/images/restaurant-sushisen-londres.png" alt="Restaurant Sushisen - Londres"><figcaption>Restaurant Sushisen - Londres</figcaption></figure>
+			<figure><img src="./assets/images/la-balisiere.png" alt="Villa La Balisiere"><figcaption>Villa La Balisiere</figcaption></figure>
+			<figure><img src="./assets/images/structures-thermopolis.png" alt="Structures Thermopolis"><figcaption>Structures Thermopolis</figcaption></figure>
+			<figure><img src="./assets/images/appartement-paris-x.png" alt="Appartement Paris X"><figcaption>Appartement Paris X</figcaption></figure>
+			<figure><img src="./assets/images/le-coteau-cassis.png" alt="Pavillon Le coteau"><figcaption>Pavillon Le coteau</figcaption></figure>
+			<figure><img src="./assets/images/villa-ferneze.png" alt="Villa Ferneze"><figcaption>Villa Ferneze</figcaption></figure>
+			<figure><img src="./assets/images/appartement-paris-xviii.png" alt="Appartement Paris XVIII"><figcaption>Appartement Paris XVIII</figcaption></figure>
+			<figure><img src="./assets/images/bar-lullaby-paris.png" alt="Bar Lullaby"><figcaption>Bar Lullaby</figcaption></figure>
+			<figure><img src="./assets/images/hotel-first-arte-new-delhi.png" alt="Hotel First Arte"><figcaption>Hotel First Arte</figcaption></figure>
 		</div>
 	</section>
 	<section id="contact">
@@ -102,30 +70,56 @@
 			<input type="submit" value="Envoyer">
 		</form>
 	</section>
-</main>
-
-<div class="modal" id="gallery-modal" role="dialog" aria-modal="true" aria-labelledby="gallery-modal-title">
+	<div class="modal" id="gallery-modal" role="dialog" aria-modal="true" aria-labelledby="gallery-modal-title">
 	<div class="modal-content">
 		<a class="modal-close" href="#portfolio" aria-label="Fermer la galerie">×</a>
 		<h2 id="gallery-modal-title">Galerie photo</h2>
 		<div class="modal-gallery">
-			<figure><img src="assets/images/abajour-tahina.png" alt="Abajour Tahina"><button type="button" aria-label="Supprimer Abajour Tahina">▣</button></figure>
-			<figure><img src="assets/images/appartement-paris-v.png" alt="Appartement Paris V"><button type="button" aria-label="Supprimer Appartement Paris V">▣</button></figure>
-			<figure><img src="assets/images/restaurant-sushisen-londres.png" alt="Restaurant Sushisen - Londres"><button type="button" aria-label="Supprimer Restaurant Sushisen - Londres">▣</button></figure>
-			<figure><img src="assets/images/la-balisiere.png" alt="Villa La Balisiere"><button type="button" aria-label="Supprimer Villa La Balisiere">▣</button></figure>
-			<figure><img src="assets/images/structures-thermopolis.png" alt="Structures Thermopolis"><button type="button" aria-label="Supprimer Structures Thermopolis">▣</button></figure>
-			<figure><img src="assets/images/appartement-paris-x.png" alt="Appartement Paris X"><button type="button" aria-label="Supprimer Appartement Paris X">▣</button></figure>
-			<figure><img src="assets/images/le-coteau-cassis.png" alt="Pavillon Le coteau"><button type="button" aria-label="Supprimer Pavillon Le coteau">▣</button></figure>
-			<figure><img src="assets/images/villa-ferneze.png" alt="Villa Ferneze"><button type="button" aria-label="Supprimer Villa Ferneze">▣</button></figure>
-			<figure><img src="assets/images/appartement-paris-xviii.png" alt="Appartement Paris XVIII"><button type="button" aria-label="Supprimer Appartement Paris XVIII">▣</button></figure>
-			<figure><img src="assets/images/bar-lullaby-paris.png" alt="Bar Lullaby"><button type="button" aria-label="Supprimer Bar Lullaby">▣</button></figure>
-			<figure><img src="assets/images/hotel-first-arte-new-delhi.png" alt="Hotel First Arte"><button type="button" aria-label="Supprimer Hotel First Arte">▣</button></figure>
+			<figure><img src="assets/images/abajour-tahina.png" alt="Abajour Tahina"><button type="button" aria-label="Supprimer Abajour Tahina"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></figure>
+			<figure><img src="assets/images/appartement-paris-v.png" alt="Appartement Paris V"><button type="button" aria-label="Supprimer Appartement Paris V"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></figure>
+			<figure><img src="assets/images/restaurant-sushisen-londres.png" alt="Restaurant Sushisen - Londres"><button type="button" aria-label="Supprimer Restaurant Sushisen - Londres"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></figure>
+			<figure><img src="assets/images/la-balisiere.png" alt="Villa La Balisiere"><button type="button" aria-label="Supprimer Villa La Balisiere"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></figure>
+			<figure><img src="assets/images/structures-thermopolis.png" alt="Structures Thermopolis"><button type="button" aria-label="Supprimer Structures Thermopolis"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></figure>
+			<figure><img src="assets/images/appartement-paris-x.png" alt="Appartement Paris X"><button type="button" aria-label="Supprimer Appartement Paris X"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></figure>
+			<figure><img src="assets/images/le-coteau-cassis.png" alt="Pavillon Le coteau"><button type="button" aria-label="Supprimer Pavillon Le coteau"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></figure>
+			<figure><img src="assets/images/villa-ferneze.png" alt="Villa Ferneze"><button type="button" aria-label="Supprimer Villa Ferneze"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></figure>
+			<figure><img src="assets/images/appartement-paris-xviii.png" alt="Appartement Paris XVIII"><button type="button" aria-label="Supprimer Appartement Paris XVIII"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></figure>
+			<figure><img src="assets/images/bar-lullaby-paris.png" alt="Bar Lullaby"><button type="button" aria-label="Supprimer Bar Lullaby"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></figure>
+			<figure><img src="assets/images/hotel-first-arte-new-delhi.png" alt="Hotel First Arte"><button type="button" aria-label="Supprimer Hotel First Arte"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></figure>
 		</div>
-		<div class="modal-actions"><button type="button">Ajouter une photo</button></div>
+		<div class="modal-actions"><a href="#add-photo-modal">Ajouter une photo</a></div>
 	</div>
 </div>
 
-<footer>
+<div class="modal" id="add-photo-modal" role="dialog" aria-modal="true" aria-labelledby="add-photo-title">
+	<div class="modal-content add-photo-content">
+		<a class="modal-back" href="#gallery-modal" aria-label="Retour à la galerie">←</a>
+		<a class="modal-close" href="#portfolio" aria-label="Fermer l'ajout de photo">×</a>
+		<h2 id="add-photo-title">Ajout photo</h2>
+		<form class="add-photo-form" action="#portfolio">
+			<div class="upload-area">
+				<span class="upload-icon" aria-hidden="true">▣</span>
+				<label for="photo-file">+ Ajouter photo</label>
+				<input id="photo-file" type="file" accept="image/png, image/jpeg" required>
+				<img class="upload-preview" src="" alt="Aperçu de la photo sélectionnée" hidden>
+				<small>jpg, png : 4mo max</small>
+			</div>
+			<label for="photo-title">Titre</label>
+			<input id="photo-title" type="text" required>
+			<label for="photo-category">Catégorie</label>
+			<select id="photo-category" required>
+				<option value="" selected disabled></option>
+				<option>Objets</option>
+				<option>Appartements</option>
+				<option>Hôtels & restaurants</option>
+			</select>
+			<div class="add-photo-submit"><button type="submit" disabled>Valider</button></div>
+		</form>
+	</div>
+</div>
+
+	</main>
+	<footer>
 	<nav>
 		<ul>
 			<li>Mentions Légales</li>
