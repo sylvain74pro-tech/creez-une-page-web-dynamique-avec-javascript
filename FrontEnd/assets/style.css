@@ -53,6 +53,20 @@ body {
 	font-family: 'Work Sans' ;
 	font-size: 14px;
 }
+.edit-banner {
+	position: relative;
+	width: 100vw;
+	margin-left: calc(50% - 50vw);
+	height: 59px;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	background: #000;
+	color: #fff;
+	font-size: 14px;
+}
 header {
 	display: flex;
 	justify-content: space-between;
@@ -125,6 +139,170 @@ li:hover {
 	text-align: center;
 	margin-bottom: 1em;
 }
+.portfolio-heading {
+	display: flex;
+	justify-content: center;
+	align-items: baseline;
+	gap: 30px;
+}
+.portfolio-heading h2 { margin-bottom: 1em; }
+.edit-projects {
+	border: 0;
+	background: transparent;
+	font: inherit;
+	cursor: pointer;
+	padding: 0;
+	color: inherit;
+	text-decoration: none;
+}
+
+/* Fenêtre Galerie photo, ouverte avec le lien #gallery-modal. */
+.modal {
+	display: none;
+	position: fixed;
+	inset: 0;
+	z-index: 10;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	box-sizing: border-box;
+	background: rgba(0, 0, 0, 0.3);
+}
+.modal:target { display: flex; }
+.modal-content {
+	position: relative;
+	width: 630px;
+	max-width: 100%;
+	min-height: 620px;
+	box-sizing: border-box;
+	padding: 60px 105px 45px;
+	border-radius: 10px;
+	background: #fff;
+}
+.modal-content h2 {
+	margin-bottom: 46px;
+	font-family: 'Work Sans';
+	font-size: 26px;
+	font-weight: 400;
+	text-align: center;
+	color: #000;
+}
+.modal-close {
+	position: absolute;
+	top: 24px;
+	right: 28px;
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 1;
+	color: #000;
+	text-decoration: none;
+}
+.modal-gallery {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 28px 8px;
+	padding-bottom: 65px;
+	border-bottom: 1px solid #b3b3b3;
+}
+.modal-gallery figure { position: relative; }
+.modal-gallery img { display: block; width: 100%; aspect-ratio: 1 / 1.25; object-fit: cover; }
+.modal-gallery button {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	padding: 2px 4px;
+	border: 0;
+	border-radius: 2px;
+	background: #000;
+	color: #fff;
+	font-size: 10px;
+	cursor: pointer;
+}
+.modal-actions { padding-top: 38px; text-align: center; }
+.modal-actions a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 237px;
+	height: 36px;
+	border: 0;
+	border-radius: 60px;
+	font-family: 'Syne';
+	font-weight: 700;
+	color: #fff;
+	background: #1d6154;
+	cursor: pointer;
+	text-decoration: none;
+}
+.modal-back {
+	position: absolute;
+	top: 24px;
+	left: 28px;
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1;
+	color: #000;
+	text-decoration: none;
+}
+.add-photo-content { min-height: 670px; }
+.add-photo-form { display: flex; flex-direction: column; }
+.upload-area {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+	height: 170px;
+	margin-bottom: 30px;
+	background: #e8f1f6;
+}
+.upload-icon { margin-bottom: 7px; font-size: 60px; line-height: .7; color: #b9c5cc; }
+.upload-area label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 173px;
+	height: 36px;
+	border-radius: 50px;
+	background: #cbd6dc;
+	font-size: 14px;
+	font-weight: 700;
+	color: #306685;
+	cursor: pointer;
+}
+.upload-area input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.upload-area small { margin-top: 7px; font-size: 10px; }
+.upload-preview { width: 130px; height: 155px; object-fit: cover; }
+.upload-area:has(.upload-preview:not([hidden])) .upload-icon,
+.upload-area:has(.upload-preview:not([hidden])) label,
+.upload-area:has(.upload-preview:not([hidden])) small { display: none; }
+.add-photo-form > label { margin: 0 0 10px; }
+.add-photo-form > input, .add-photo-form select {
+	height: 50px;
+	margin-bottom: 21px;
+	box-sizing: border-box;
+	border: 0;
+	padding: 0 12px;
+	font: inherit;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, .09);
+}
+.add-photo-form select { appearance: auto; background: #fff; }
+.add-photo-submit {
+	margin-top: 15px;
+	padding-top: 38px;
+	border-top: 1px solid #b3b3b3;
+	text-align: center;
+}
+.add-photo-submit button {
+	width: 237px;
+	height: 36px;
+	border: 0;
+	border-radius: 60px;
+	font-family: 'Syne';
+	font-weight: 700;
+	color: #fff;
+	background: #a7a7a7;
+}
+.add-photo-submit button:not(:disabled) { background: #1d6154; cursor: pointer; }
 .gallery {
 	width: 100%;
 	display: grid;
@@ -186,3 +364,53 @@ footer nav ul {
 	margin: 2em
 }
 
+/* Page de connexion */
+#login {
+	width: 380px;
+	max-width: calc(100% - 32px);
+	margin: 100px auto;
+}
+
+#login h2 {
+	margin-bottom: 30px;
+	text-align: center;
+}
+
+#login form {
+	display: flex;
+	flex-direction: column;
+}
+
+#login label {
+	margin: 0 0 7px;
+}
+
+#login input:not([type="submit"]) {
+	height: 50px;
+	margin-bottom: 30px;
+	padding: 0 12px;
+	box-sizing: border-box;
+	border: 0;
+	font-size: 1.1em;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
+}
+
+#login input[type="submit"] {
+	border: 0;
+	cursor: pointer;
+}
+
+nav a {
+	color: inherit;
+	text-decoration: none;
+}
+
+@media (max-width: 760px) {
+	body { padding: 0 20px; box-sizing: border-box; }
+	header { margin: 30px 0; }
+	#introduction { flex-direction: column; gap: 25px; }
+	.gallery { grid-template-columns: 1fr 1fr; }
+	.modal-content { min-height: 0; padding: 50px 30px 35px; }
+	.modal-gallery { gap: 14px 6px; padding-bottom: 35px; }
+	.add-photo-content { min-height: 0; }
+}
