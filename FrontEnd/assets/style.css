@@ -59,7 +59,7 @@ body {
 	margin-left: calc(50% - 50vw);
 	height: 59px;
 	box-sizing: border-box;
-	display: none;
+	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 10px;
@@ -67,6 +67,7 @@ body {
 	color: #fff;
 	font-size: 14px;
 }
+.edit-banner[hidden] { display: none; }
 header {
 	display: flex;
 	justify-content: space-between;
@@ -140,11 +141,12 @@ li:hover {
 	margin-bottom: 1em;
 }
 .portfolio-heading {
-	display: flex;
+	display: none;
 	justify-content: center;
 	align-items: baseline;
 	gap: 30px;
 }
+.portfolio-heading:has(#edit-projects:not([hidden])) { display: flex; }
 .portfolio-heading h2 { margin-bottom: 1em; }
 .filter-buttons {
 	display: flex;
@@ -425,6 +427,12 @@ footer nav ul {
 #login input[type="submit"] {
 	border: 0;
 	cursor: pointer;
+}
+
+#login-error {
+	margin-top: 16px;
+	text-align: center;
+	color: #b00020;
 }
 
 nav a {

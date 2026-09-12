@@ -23,5 +23,10 @@ db.sequelize.sync().then(()=> console.log('db is ready'));
 app.use('/api/users', userRoutes);
 app.use('/api/categories', categoriesRoutes);
 app.use('/api/works', worksRoutes);
+
+// Le serveur fournit aussi les pages du portfolio. Ainsi, l'accueil, le login
+// et l'API utilisent tous la même adresse : http://localhost:5678/.
+app.use(express.static(path.join(__dirname, '..', 'FrontEnd')));
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 module.exports = app;

@@ -12,7 +12,7 @@
 	<link rel="stylesheet" href="./assets/style.css">
 </head>
 <body>
-<div class="edit-banner">
+<div class="edit-banner" hidden>
 	<span aria-hidden="true">✎</span> Mode édition
 </div>
 <header>
@@ -21,7 +21,7 @@
 		<ul>
 			<li><a href="#portfolio">projets</a></li>
 			<li><a href="#contact">contact</a></li>
-			<li><a href="login.html">login</a></li>
+			<li><a id="login-link" href="login.html">login</a></li>
 			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 		</ul>
 	</nav>
@@ -41,26 +41,10 @@
 	<section id="portfolio">
 		<div class="portfolio-heading">
 			<h2>Mes Projets</h2>
+			<a id="edit-projects" class="edit-projects" href="#gallery-modal" hidden><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i> modifier</a>
 		</div>
-		<div class="filter-buttons">
-			<button class="filter-button is-active" type="button" data-category="all">Tous</button>
-			<button class="filter-button" type="button" data-category="objects">Objets</button>
-			<button class="filter-button" type="button" data-category="apartments">Appartements</button>
-			<button class="filter-button" type="button" data-category="hotels">Hôtels & restaurants</button>
-		</div>
-		<div class="gallery">
-			<figure data-category="objects"><img src="./assets/images/abajour-tahina.png" alt="Abajour Tahina"><figcaption>Abajour Tahina</figcaption></figure>
-			<figure data-category="apartments"><img src="./assets/images/appartement-paris-v.png" alt="Appartement Paris V"><figcaption>Appartement Paris V</figcaption></figure>
-			<figure data-category="hotels"><img src="./assets/images/restaurant-sushisen-londres.png" alt="Restaurant Sushisen - Londres"><figcaption>Restaurant Sushisen - Londres</figcaption></figure>
-			<figure data-category="apartments"><img src="./assets/images/la-balisiere.png" alt="Villa La Balisière"><figcaption>Villa La Balisière</figcaption></figure>
-			<figure data-category="objects"><img src="./assets/images/structures-thermopolis.png" alt="Structures Thermopolis"><figcaption>Structures Thermopolis</figcaption></figure>
-			<figure data-category="apartments"><img src="./assets/images/appartement-paris-x.png" alt="Appartement Paris X"><figcaption>Appartement Paris X</figcaption></figure>
-			<figure data-category="apartments"><img src="./assets/images/le-coteau-cassis.png" alt="Pavillon Le Coteau"><figcaption>Pavillon Le Coteau</figcaption></figure>
-			<figure data-category="apartments"><img src="./assets/images/villa-ferneze.png" alt="Villa Ferneze"><figcaption>Villa Ferneze</figcaption></figure>
-			<figure data-category="apartments"><img src="./assets/images/appartement-paris-xviii.png" alt="Appartement Paris XVIII"><figcaption>Appartement Paris XVIII</figcaption></figure>
-			<figure data-category="hotels"><img src="./assets/images/bar-lullaby-paris.png" alt="Bar Lullaby - Paris"><figcaption>Bar Lullaby - Paris</figcaption></figure>
-			<figure data-category="hotels"><img src="./assets/images/hotel-first-arte-new-delhi.png" alt="Hôtel First Arte - New Delhi"><figcaption>Hôtel First Arte - New Delhi</figcaption></figure>
-		</div>
+		<div class="filter-buttons" aria-label="Filtrer les projets par catégorie"></div>
+		<div class="gallery" aria-live="polite"></div>
 	</section>
 	<section id="contact">
 		<h2>Contact</h2>
