@@ -24,5 +24,10 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
+  },
+  "allowScripts": {
+    "bcrypt@5.0.1": true,
+    "sqlite3@5.0.5": true,
+    "nodemon@2.0.15": true
   }
 }
