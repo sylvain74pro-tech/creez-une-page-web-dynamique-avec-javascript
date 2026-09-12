@@ -155,6 +155,9 @@ li:hover {
 	gap: 10px;
 	margin: 24px 0 50px;
 }
+.filter-buttons[hidden] {
+	display: none;
+}
 .filter-button {
 	min-height: 37px;
 	padding: 0 16px;

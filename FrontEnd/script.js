@@ -1,5 +1,6 @@
 const gallery = document.querySelector('.gallery');
 const token = localStorage.getItem('token');
+const isEditMode = Boolean(token) && new URLSearchParams(window.location.search).get('edit') === '1';
 const editBanner = document.querySelector('.edit-banner');
 const editProjects = document.querySelector('#edit-projects');
 const loginLink = document.querySelector('#login-link');
@@ -27,7 +28,7 @@ const fallbackWorks = [
   { title: 'Hôtel First Arte - New Delhi', imageUrl: './assets/images/hotel-first-arte-new-delhi.png', categoryId: 3 },
 ];
 
-if (token) {
+if (isEditMode) {
   editBanner.hidden = false;
   editProjects.hidden = false;
   filters.hidden = true;
@@ -37,7 +38,7 @@ if (token) {
   loginLink.addEventListener('click', (event) => {
     event.preventDefault();
     localStorage.removeItem('token');
-    window.location.reload();
+    window.location.assign('./index.html');
   });
 }
 
@@ -62,7 +63,7 @@ function renderWorks(works) {
 
 function renderFilters(categories, works) {
   const fragment = document.createDocumentFragment();
-  const allCategories = [{ id: 'all', name: 'Tous' }, ...categories];
+  const allCategories = [{ id: 'all', name: 'none' }, ...categories];
 
   allCategories.forEach((category, index) => {
     const button = document.createElement('button');
