@@ -67,6 +67,7 @@ body {
 	color: #fff;
 	font-size: 14px;
 }
+.edit-banner[hidden] { display: none; }
 header {
 	display: flex;
 	justify-content: space-between;
@@ -140,7 +141,7 @@ li:hover {
 	margin-bottom: 1em;
 }
 .portfolio-heading {
-	display: flex;
+	display: none;
 	justify-content: center;
 	align-items: baseline;
 	gap: 30px;
@@ -425,6 +426,12 @@ footer nav ul {
 #login input[type="submit"] {
 	border: 0;
 	cursor: pointer;
+}
+
+#login-error {
+	margin-top: 16px;
+	text-align: center;
+	color: #b00020;
 }
 
 nav a {

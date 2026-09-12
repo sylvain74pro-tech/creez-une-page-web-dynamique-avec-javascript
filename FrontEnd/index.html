@@ -12,7 +12,7 @@
 	<link rel="stylesheet" href="./assets/style.css">
 </head>
 <body>
-<div class="edit-banner">
+<div class="edit-banner" hidden>
 	<span aria-hidden="true">✎</span> Mode édition
 </div>
 <header>
@@ -21,7 +21,7 @@
 		<ul>
 			<li><a href="#portfolio">projets</a></li>
 			<li><a href="#contact">contact</a></li>
-			<li><a href="login.html">login</a></li>
+			<li><a id="login-link" href="login.html">login</a></li>
 			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 		</ul>
 	</nav>
@@ -41,6 +41,7 @@
 	<section id="portfolio">
 		<div class="portfolio-heading">
 			<h2>Mes Projets</h2>
+			<a id="edit-projects" class="edit-projects" href="#gallery-modal" hidden><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i> modifier</a>
 		</div>
 		<div class="filter-buttons">
 			<button class="filter-button is-active" type="button" data-category="all">Tous</button>
