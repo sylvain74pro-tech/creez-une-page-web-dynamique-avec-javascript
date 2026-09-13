@@ -1,34 +1,28 @@
-const loginApiUrl = 'http://localhost:5678/api/users/login';
-const loginForm = document.querySelector('#login-form');
-const loginError = document.querySelector('#login-error');
+// Sélection du formulaire
+const form = document.querySelector("#login-form");
 
-function showLoginError(message) {
-  loginError.textContent = message;
-  loginError.hidden = false;
-}
+form.addEventListener("submit", async (event) => {
+    event.preventDefault(); // Empêche le rechargement
 
-loginForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  loginError.hidden = true;
+    const email = document.querySelector("#email").value;
+    const password = document.querySelector("#password").value;
 
-  const email = document.querySelector('#email').value;
-  const password = document.querySelector('#password').value;
-
-  try {
-    const response = await fetch(loginApiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+    // Appel API
+    const response = await fetch("http://localhost:5678/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
     });
 
-    if (!response.ok) {
-      throw new Error('E-mail ou mot de passe incorrect.');
-    }
+    const result = await response.json();
 
-    const { token } = await response.json();
-    localStorage.setItem('token', token);
-    window.location.assign('./index.html');
-  } catch (error) {
-    showLoginError(error.message);
-  }
+    if (result.token) {
+        // Stockage du token
+        localStorage.setItem("token", result.token);
+
+        // Redirection vers la page suivante
+        window.location.href = "index.html";
+    } else {
+        alert("Identifiants incorrects");
+    }
 });
