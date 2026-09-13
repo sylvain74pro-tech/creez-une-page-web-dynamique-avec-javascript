@@ -196,7 +196,6 @@ async function uploadPhoto(event) {
         body: formData
     });
 
-    alert("Photo ajoutée !");
     window.location.reload();
 }
 
