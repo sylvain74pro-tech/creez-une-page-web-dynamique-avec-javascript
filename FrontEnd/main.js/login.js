@@ -27,7 +27,7 @@ loginForm.addEventListener('submit', async (event) => {
 
     const { token } = await response.json();
     localStorage.setItem('token', token);
-    window.location.assign('./index.html?edit=1');
+    window.location.assign('./index.html');
   } catch (error) {
     showLoginError(error.message);
   }
