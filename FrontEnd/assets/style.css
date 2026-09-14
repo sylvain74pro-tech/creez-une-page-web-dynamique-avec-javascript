@@ -363,6 +363,7 @@ li:hover {
 }
 
 .gallery figure { margin: 0; }
+.gallery figure[hidden] { display: none; }
 .gallery figcaption { margin-top: 6px; font-size: 13px; }
 
 .gallery img {
@@ -467,7 +468,7 @@ footer nav ul {
 	cursor: pointer;
 }
 
-#login-error {
+#login-error, #contact #contact-error {
 	margin-top: 16px;
 	text-align: center;
 	color: #b00020;

@@ -53,10 +53,7 @@
         </div>
 
         <div class="filter-buttons">
-            <button class="filter-button is-active" type="button" data-category="all">Tous</button>
-            <button class="filter-button" type="button" data-category="1">Objets</button>
-            <button class="filter-button" type="button" data-category="2">Appartements</button>
-            <button class="filter-button" type="button" data-category="3">Hôtels &amp; restaurants</button>
+            <button class="filter-button is-active" type="button" data-category="all" aria-pressed="true">Tous</button>
         </div>
 
         <!-- Galerie générée par le JS -->
@@ -75,6 +72,7 @@
             <label for="message">Message</label>
             <textarea name="message" id="message" cols="30" rows="10"></textarea>
             <input type="submit" value="Envoyer">
+            <p id="contact-error" role="alert" aria-live="polite"></p>
         </form>
     </section>
 

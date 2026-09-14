@@ -1,6 +1,6 @@
 const API_URL = "http://localhost:5678/api";
 const gallery = document.querySelector(".gallery");
-const filterButtons = document.querySelectorAll(".filter-button");
+let selectedCategory = "all";
 const token = localStorage.getItem("token");
 const editBanner = document.querySelector(".edit-banner");
 const editProjects = document.querySelector("#edit-projects");
@@ -12,7 +12,9 @@ function displayWorks(works) {
 
   works.forEach((work) => {
     const figure = document.createElement("figure");
+    figure.dataset.workId = String(work.id);
     figure.dataset.category = String(work.categoryId);
+    figure.hidden = selectedCategory !== "all" && figure.dataset.category !== selectedCategory;
 
     const image = document.createElement("img");
     image.src = work.imageUrl;
@@ -51,18 +53,76 @@ if (token) {
   });
 }
 
-filterButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const selectedCategory = button.dataset.category;
-    const projectCards = document.querySelectorAll(".gallery figure");
-
-    filterButtons.forEach((item) => item.classList.remove("is-active"));
-    button.classList.add("is-active");
-
-    projectCards.forEach((card) => {
-      card.hidden = selectedCategory !== "all" && card.dataset.category !== selectedCategory;
-    });
+function applyFilter(category) {
+  selectedCategory = category;
+  filters.querySelectorAll(".filter-button").forEach((button) => {
+    const active = button.dataset.category === category;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
   });
+  gallery.querySelectorAll("figure").forEach((card) => {
+    card.hidden = category !== "all" && card.dataset.category !== category;
+  });
+}
+
+filters.addEventListener("click", (event) => {
+  const button = event.target.closest(".filter-button");
+  if (button && filters.contains(button)) applyFilter(button.dataset.category);
 });
 
+async function loadCategories() {
+  try {
+    const response = await fetch(`${API_URL}/categories`);
+    if (!response.ok) throw new Error("Impossible de récupérer les catégories.");
+    const categories = await response.json();
+    categories.forEach((category) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "filter-button";
+      button.dataset.category = String(category.id);
+      button.textContent = category.name;
+      button.setAttribute("aria-pressed", "false");
+      filters.appendChild(button);
+    });
+  } catch (error) {
+    const message = document.createElement("p");
+    message.setAttribute("role", "status");
+    message.textContent = "Les filtres par catégorie sont indisponibles. Tous les projets restent consultables.";
+    filters.appendChild(message);
+    console.error(error);
+  }
+}
+
 loadWorks();
+loadCategories();
+// Vérification des champs du formulaire de contact avant l'envoi.
+const contactForm = document.querySelector("#contact form");
+
+if (contactForm) {
+  // Affiche les erreurs directement dans le formulaire.
+  contactForm.noValidate = true;
+  const contactError = document.querySelector("#contact-error");
+
+  contactForm.addEventListener("submit", (event) => {
+    contactError.textContent = "";
+    const fields = [
+      contactForm.querySelector("#name"),
+      contactForm.querySelector("#email"),
+      contactForm.querySelector("#message")
+    ];
+    const emptyField = fields.find((field) => field.value.trim() === "");
+
+    if (emptyField) {
+      event.preventDefault();
+      contactError.textContent = "Veuillez renseigner tous les champs avant de soumettre votre message.";
+      emptyField.focus();
+      return;
+    }
+
+    if (!contactForm.checkValidity()) {
+      event.preventDefault();
+      contactError.textContent = "Veuillez saisir une adresse e-mail valide.";
+      contactForm.querySelector("#email").focus();
+    }
+  });
+}
