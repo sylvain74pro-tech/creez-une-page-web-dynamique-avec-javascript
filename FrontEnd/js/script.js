@@ -1,3 +1,6 @@
+/* =================================================================
+ * 1. CONSTANTS & GLOBALS
+ * ================================================================= */
 const API_URL = "http://localhost:5678/api";
 const gallery = document.querySelector(".gallery");
 let selectedCategory = "all";
@@ -7,6 +10,9 @@ const editProjects = document.querySelector("#edit-projects");
 const loginLink = document.querySelector("#login-link");
 const filters = document.querySelector(".filter-buttons");
 
+/* =================================================================
+ * 2. WORKS DISPLAY & FETCHING
+ * ================================================================= */
 function displayWorks(works) {
   gallery.innerHTML = "";
 
@@ -39,6 +45,9 @@ async function loadWorks() {
   }
 }
 
+/* =================================================================
+ * 3. AUTHENTICATION & ADMIN MODE MANAGEMENT
+ * ================================================================= */
 if (token) {
   editBanner.hidden = false;
   editProjects.hidden = false;
@@ -53,6 +62,9 @@ if (token) {
   });
 }
 
+/* =================================================================
+ * 4. CATEGORIES FILTERING
+ * ================================================================= */
 function applyFilter(category) {
   selectedCategory = category;
   filters.querySelectorAll(".filter-button").forEach((button) => {
@@ -75,6 +87,7 @@ async function loadCategories() {
     const response = await fetch(`${API_URL}/categories`);
     if (!response.ok) throw new Error("Impossible de récupérer les catégories.");
     const categories = await response.json();
+    
     categories.forEach((category) => {
       const button = document.createElement("button");
       button.type = "button";
@@ -93,9 +106,15 @@ async function loadCategories() {
   }
 }
 
+/* =================================================================
+ * 5. INITIALIZATION & DATA LOADING
+ * ================================================================= */
 loadWorks();
 loadCategories();
-// Vérification des champs du formulaire de contact avant l'envoi.
+
+/* =================================================================
+ * 6. CONTACT FORM VALIDATION
+ * ================================================================= */
 const contactForm = document.querySelector("#contact form");
 
 if (contactForm) {

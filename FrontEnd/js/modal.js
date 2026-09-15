@@ -1,7 +1,6 @@
-// ===============================
-// 1. Sélection des éléments
-// ===============================
-
+/* =================================================================
+ * 1. SELECTION DES ELEMENTS DOM
+ * ================================================================= */
 const modal = document.querySelector(".modal");
 const modalContent = document.querySelector(".modal-content");
 let modalGallery = document.querySelector(".modal-gallery");
@@ -9,10 +8,9 @@ const closeBtn = document.querySelector(".modal-close");
 const addPhotoBtn = document.querySelector(".add-photo-btn");
 const editProjectsBtn = document.querySelector("#edit-projects");
 
-// ===============================
-// 2. Ouverture / fermeture de la modale
-// ===============================
-
+/* =================================================================
+ * 2. OUVERTURE / FERMETURE DE LA MODALE
+ * ================================================================= */
 function openModal() {
     modal.style.display = "flex";
     if (modal.querySelector(".modal-gallery")) {
@@ -37,19 +35,17 @@ modal.addEventListener("click", (e) => {
     if (e.target === modal) closeModal();
 });
 
-// ===============================
-// 3. Récupération des travaux
-// ===============================
-
+/* =================================================================
+ * 3. RECUPERATION DES TRAVAUX
+ * ================================================================= */
 async function getWorks() {
     const response = await fetch("http://localhost:5678/api/works");
     return await response.json();
 }
 
-// ===============================
-// 4. Affichage des travaux dans la modale
-// ===============================
-
+/* =================================================================
+ * 4. AFFICHAGE DES TRAVAUX DANS LA MODALE
+ * ================================================================= */
 async function displayModalGallery() {
     const works = await getWorks();
     modalGallery.innerHTML = "";
@@ -80,10 +76,9 @@ async function displayModalGallery() {
     });
 }
 
-// ===============================
-// 5. Suppression d’une photo
-// ===============================
-
+/* =================================================================
+ * 5. SUPPRESSION D'UNE PHOTO
+ * ================================================================= */
 async function deleteWork(id, button) {
     if (button?.disabled) return;
     if (button) button.disabled = true;
@@ -97,6 +92,7 @@ async function deleteWork(id, button) {
             method: "DELETE",
             headers: { "Authorization": `Bearer ${token}` }
         });
+        
         if (!response.ok) {
             throw new Error(response.status === 401 || response.status === 403
                 ? "Votre connexion ne permet pas cette suppression. Veuillez vous reconnecter."
@@ -121,13 +117,17 @@ async function deleteWork(id, button) {
         if (button) button.disabled = false;
     }
 }
-// ===============================
-// 6. Passage à la modale "Ajouter une photo"
-// ===============================
 
+/* =================================================================
+ * 6. PASSAGE A LA MODALE "AJOUTER UNE PHOTO" ET NAVIGATION
+ * ================================================================= */
 function showAddPhotoForm() {
     modalContent.innerHTML = `
-        <button class="modal-back" type="button" aria-label="Retour à la galerie">←</button>
+        <button class="modal-back" type="button" aria-label="Retour à la galerie">
+            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5l-7 7 7 7M5 12h14" />
+            </svg>
+        </button>
         <h2 id="modal-title">Ajout photo</h2>
 
         <form id="add-photo-form" class="add-photo-form" novalidate>
@@ -165,6 +165,7 @@ function showAddPhotoForm() {
     const submitButton = form.querySelector("button[type='submit']");
     const preview = modalContent.querySelector(".upload-preview");
     const message = form.querySelector(".upload-error");
+    
     const updateSubmitState = () => {
         const error = validatePhotoForm(form);
         submitButton.disabled = Boolean(error) || form.dataset.sending === "true";
@@ -182,6 +183,7 @@ function showAddPhotoForm() {
         }
         updateSubmitState();
     });
+    
     titleInput.addEventListener("input", updateSubmitState);
     categoryInput.addEventListener("change", updateSubmitState);
     loadPhotoCategories(categoryInput, message);
@@ -202,12 +204,11 @@ function showGallery() {
     displayModalGallery();
 }
 
-addPhotoBtn.addEventListener("click", showAddPhotoForm);
+addPhotoBtn?.addEventListener("click", showAddPhotoForm);
 
-// ===============================
-// 7. Upload d’une nouvelle photo
-// ===============================
-
+/* =================================================================
+ * 7. UPLOAD ET VALIDATION D'UNE NOUVELLE PHOTO
+ * ================================================================= */
 function validatePhotoFile(file) {
     if (!file) return "Sélectionnez une image.";
     if (!["image/jpeg", "image/png"].includes(file.type)) return "Choisissez une image JPG ou PNG.";
@@ -233,12 +234,14 @@ async function loadPhotoCategories(select, message) {
         const response = await fetch("http://localhost:5678/api/categories");
         if (!response.ok) throw new Error("Impossible de charger les catégories. Rouvrez le formulaire pour réessayer.");
         const categories = await response.json();
+        
         categories.forEach(category => {
             const option = document.createElement("option");
             option.value = String(category.id);
             option.textContent = category.name;
             select.appendChild(option);
         });
+        
         if (!categories.length) throw new Error("Aucune catégorie disponible.");
         select.disabled = false;
     } catch (error) {
@@ -251,6 +254,7 @@ async function uploadPhoto(event) {
     event.preventDefault();
     const form = event.currentTarget;
     if (form.dataset.sending === "true") return;
+    
     const message = form.querySelector(".upload-error");
     const validationError = validatePhotoForm(form);
     message.textContent = validationError;
@@ -259,23 +263,28 @@ async function uploadPhoto(event) {
     const submit = form.querySelector("button[type='submit']");
     form.dataset.sending = "true";
     submit.disabled = true;
+    
     try {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("Veuillez vous reconnecter pour ajouter un projet.");
+        
         const formData = new FormData();
         formData.append("image", form.querySelector("#photo-file").files[0]);
         formData.append("title", form.querySelector("#photo-title").value.trim());
         formData.append("category", form.querySelector("#photo-category").value);
+        
         const response = await fetch("http://localhost:5678/api/works", {
             method: "POST",
             headers: { "Authorization": `Bearer ${token}` },
             body: formData
         });
+        
         if (!response.ok) {
             throw new Error(response.status === 401 || response.status === 403
                 ? "Veuillez vous reconnecter pour ajouter un projet."
                 : "L’ajout a échoué. Vérifiez les champs et réessayez.");
         }
+        
         // Le serveur confirme l’enregistrement avant le retour à la galerie.
         window.location.reload();
     } catch (error) {

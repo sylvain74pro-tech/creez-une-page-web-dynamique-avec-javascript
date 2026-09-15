@@ -170,7 +170,7 @@ li:hover {
 	cursor: pointer;
 }
 .filter-button:hover,
-.filter-button.is-active {
+.filter-button.active {
 	background: #1D6154;
 	color: #fff;
 }
@@ -220,15 +220,30 @@ li:hover {
 	text-align: center;
 	color: #000;
 }
+/* Boutons alignes sur les bords de la modale. */
+.modal-back,
 .modal-close {
 	position: absolute;
 	top: 24px;
-	right: 28px;
-	font-size: 24px;
-	font-weight: 700;
-	line-height: 1;
+	width: 24px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	background: transparent;
 	color: #000;
-	text-decoration: none;
+	font-family: Arial, sans-serif;
+	font-size: 28px;
+	font-weight: 400;
+	line-height: 1;
+	cursor: pointer;
+}
+.modal-close {
+	right: 28px;
+	left: auto;
 }
 .modal-gallery {
 	display: grid;
@@ -283,17 +298,9 @@ li:hover {
 	cursor: pointer;
 }
 .modal-back {
-	position: absolute;
-	top: 24px;
 	left: 28px;
-	font-size: 28px;
-	font-weight: 700;
-	line-height: 1;
-	color: #000;
+	right: auto;
 	text-decoration: none;
-	border: 0;
-	background: transparent;
-	cursor: pointer;
 }
 .add-photo-content { min-height: 670px; }
 .add-photo-form { display: flex; flex-direction: column; }
