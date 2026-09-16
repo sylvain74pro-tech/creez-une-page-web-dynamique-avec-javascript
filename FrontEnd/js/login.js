@@ -18,16 +18,15 @@ form.addEventListener("submit", async (event) => {
     const password = document.querySelector("#password").value;
 
     try {
-        /* -------------------------------------------------------------
-         * 2. API CALL TO AUTHENTICATE USER
-         * ------------------------------------------------------------- */
         const response = await fetch("http://localhost:5678/api/users/login", {
             method: "POST",
-            headers: { 
-                "Content-Type": "application/json" 
+            headers: {
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({ email, password })
         });
+
+
 
         /* -------------------------------------------------------------
          * 3. HANDLE CLIENT / SERVER ERRORS

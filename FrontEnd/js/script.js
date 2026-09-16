@@ -34,17 +34,6 @@ function displayWorks(works) {
   });
 }
 
-async function loadWorks() {
-  try {
-    const response = await fetch(`${API_URL}/works`);
-    if (!response.ok) throw new Error("Impossible de récupérer les projets.");
-    displayWorks(await response.json());
-  } catch (error) {
-    gallery.innerHTML = "<p>Les projets ne sont pas disponibles pour le moment.</p>";
-    console.error(error);
-  }
-}
-
 /* =================================================================
  * 3. AUTHENTICATION & ADMIN MODE MANAGEMENT
  * ================================================================= */
@@ -58,10 +47,10 @@ if (token) {
   loginLink.addEventListener("click", (event) => {
     event.preventDefault();
     localStorage.removeItem("token");
-    window.location.reload();
+    window.location.href = "index.html"; 
   });
 }
-
+ 
 /* =================================================================
  * 4. CATEGORIES FILTERING
  * ================================================================= */
@@ -111,37 +100,3 @@ async function loadCategories() {
  * ================================================================= */
 loadWorks();
 loadCategories();
-
-/* =================================================================
- * 6. CONTACT FORM VALIDATION
- * ================================================================= */
-const contactForm = document.querySelector("#contact form");
-
-if (contactForm) {
-  // Affiche les erreurs directement dans le formulaire.
-  contactForm.noValidate = true;
-  const contactError = document.querySelector("#contact-error");
-
-  contactForm.addEventListener("submit", (event) => {
-    contactError.textContent = "";
-    const fields = [
-      contactForm.querySelector("#name"),
-      contactForm.querySelector("#email"),
-      contactForm.querySelector("#message")
-    ];
-    const emptyField = fields.find((field) => field.value.trim() === "");
-
-    if (emptyField) {
-      event.preventDefault();
-      contactError.textContent = "Veuillez renseigner tous les champs avant de soumettre votre message.";
-      emptyField.focus();
-      return;
-    }
-
-    if (!contactForm.checkValidity()) {
-      event.preventDefault();
-      contactError.textContent = "Veuillez saisir une adresse e-mail valide.";
-      contactForm.querySelector("#email").focus();
-    }
-  });
-}
