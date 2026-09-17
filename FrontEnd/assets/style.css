@@ -1,6 +1,6 @@
 /* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
-   License: none (public domain)
+   Licence : aucune (domaine public)
 */
 
 html, body, div, span, applet, object, iframe,
@@ -23,7 +23,7 @@ time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;
 }
-/* HTML5 display-role reset for older browsers */
+/* Réinitialisation de l’affichage des éléments HTML5 pour les anciens navigateurs */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
@@ -46,7 +46,7 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-/** end reset css**/
+/** Fin de la réinitialisation des styles CSS**/
 body {
 	max-width: 1140px;
 	margin:auto;
@@ -184,7 +184,7 @@ li:hover {
 	text-decoration: none;
 }
 
-/* Fenêtre Galerie photo, ouverte avec le lien #gallery-modal. */
+/* Fenêtre « Galerie photo », ouverte avec le bouton « modifier ». */
 .modal {
 	display: none;
 	position: fixed;
@@ -220,7 +220,7 @@ li:hover {
 	text-align: center;
 	color: #000;
 }
-/* Boutons alignes sur les bords de la modale. */
+/* Boutons alignés sur les bords de la modale. */
 .modal-back,
 .modal-close {
 	position: absolute;

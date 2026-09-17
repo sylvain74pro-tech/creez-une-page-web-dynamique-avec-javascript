@@ -13,14 +13,14 @@
 <body>
 
     <!-- ================================================================= -->
-    <!-- BARRE ADMIN (Visible seulement si connecté)                      -->
+    <!-- BARRE D’ADMINISTRATION (visible seulement si connecté)            -->
     <!-- ================================================================= -->
     <div class="edit-banner" hidden>
         <p><span aria-hidden="true">✎</span> Mode édition</p>
     </div>
 
     <!-- ================================================================= -->
-    <!-- EN-TETE / HEADER                                                  -->
+    <!-- EN-TÊTE                                                           -->
     <!-- ================================================================= -->
     <header>
         <h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
@@ -35,11 +35,11 @@
     </header>
 
     <!-- ================================================================= -->
-    <!-- CONTENU PRINCIPAL / MAIN                                          -->
+    <!-- CONTENU PRINCIPAL                                                 -->
     <!-- ================================================================= -->
     <main>
 
-        <!-- 1. Section Introduction -->
+        <!-- 1. Section de présentation -->
         <section id="introduction">
             <figure>
                 <img src="./assets/images/sophie-bluel.png" alt="Portrait de Sophie Bluel">
@@ -52,11 +52,11 @@
             </article>
         </section>
 
-        <!-- 2. Section Portfolio & Projets -->
+        <!-- 2. Galerie des projets -->
         <section id="portfolio">
             <div class="portfolio-heading">
                 <h2>Mes projets</h2>
-                <!-- Bouton modifier (mode admin) -->
+                <!-- Bouton modifier (mode administration) -->
                 <button id="edit-projects" class="edit-projects" type="button" hidden>
                     <span aria-hidden="true">✎</span> modifier
                 </button>
@@ -66,11 +66,11 @@
                 <button class="filter-button is-active" type="button" data-category="all" aria-pressed="true">Tous</button>
             </div>
 
-            <!-- Galerie générée par le JS -->
+            <!-- Galerie générée par JavaScript -->
             <div class="gallery"></div>
         </section>
 
-        <!-- 3. Section Contact -->
+        <!-- 3. Formulaire de contact -->
         <section id="contact">
             <h2>Contact</h2>
             <p>Vous avez un projet ? Discutons-en !</p>
@@ -92,7 +92,7 @@
     </main>
 
     <!-- ================================================================= -->
-    <!-- MODALE D'EDITION (Masquée par défaut)                             -->
+    <!-- MODALE D’ÉDITION (masquée par défaut)                             -->
     <!-- ================================================================= -->
     <aside id="modal" class="modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div class="modal-wrapper">
@@ -108,7 +108,7 @@
     </aside>
 
     <!-- ================================================================= -->
-    <!-- PIED DE PAGE / FOOTER                                             -->
+    <!-- PIED DE PAGE                                                      -->
     <!-- ================================================================= -->
     <footer>
         <nav>

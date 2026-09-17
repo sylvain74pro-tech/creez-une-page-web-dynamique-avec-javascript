@@ -1,5 +1,5 @@
 /* =================================================================
- * 1. SELECTION DES ELEMENTS DOM
+ * 1. SÉLECTION DES ÉLÉMENTS HTML
  * ================================================================= */
 const modal = document.querySelector(".modal");
 const modalContent = document.querySelector(".modal-content");
@@ -81,7 +81,7 @@ modal.addEventListener("click", (e) => {
 });
 
 /* =================================================================
- * 3. RECUPERATION DES TRAVAUX
+ * 3. RÉCUPÉRATION DES PROJETS
  * ================================================================= */
 async function getWorks() {
     const response = await fetch("http://localhost:5678/api/works");
@@ -92,7 +92,7 @@ async function getWorks() {
 }
 
 /* =================================================================
- * 4. AFFICHAGE DES TRAVAUX DANS LA MODALE
+ * 4. AFFICHAGE DES PROJETS DANS LA MODALE
  * ================================================================= */
 async function displayModalGallery() {
     const targetGallery = modalGallery;
@@ -178,7 +178,7 @@ async function deleteWork(id, button) {
 }
 
 /* =================================================================
- * 6. PASSAGE A LA MODALE "AJOUTER UNE PHOTO" ET NAVIGATION
+ * 6. PASSAGE À LA MODALE "AJOUTER UNE PHOTO" ET NAVIGATION
  * ================================================================= */
 function showAddPhotoForm() {
     modalContent.innerHTML = `
@@ -269,7 +269,7 @@ function showGallery() {
 addPhotoBtn?.addEventListener("click", showAddPhotoForm);
 
 /* =================================================================
- * 7. UPLOAD ET VALIDATION D'UNE NOUVELLE PHOTO
+ * 7. ENVOI ET VALIDATION D'UNE NOUVELLE PHOTO
  * ================================================================= */
 function validatePhotoFile(file) {
     if (!file) return "Sélectionnez une image.";

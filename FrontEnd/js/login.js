@@ -1,5 +1,5 @@
 /* =================================================================
- * CONSTANTS & DOM ELEMENTS SELECTION
+ * CONSTANTES ET SÉLECTION DES ÉLÉMENTS HTML
  * ================================================================= */
 const form = document.querySelector("#login-form");
 const errorMessage = document.querySelector("#login-error");
@@ -7,7 +7,7 @@ const submitButton = form.querySelector('button[type="submit"]');
 let isSubmitting = false;
 
 /* =================================================================
- * EVENT LISTENER: FORM SUBMISSION & AUTHENTICATION
+ * SOUMISSION DU FORMULAIRE ET AUTHENTIFICATION
  * ================================================================= */
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -17,11 +17,14 @@ form.addEventListener("submit", async (event) => {
     errorMessage.textContent = "";
 
     /* -------------------------------------------------------------
-     * 1. RETRIEVE INPUT VALUES
+     * 1. RÉCUPÉRATION DES IDENTIFIANTS
      * ------------------------------------------------------------- */
     const email = document.querySelector("#email").value;
     const password = document.querySelector("#password").value;
 
+    /* -------------------------------------------------------------
+     * 2. ENVOI DE LA DEMANDE DE CONNEXION
+     * ------------------------------------------------------------- */
     try {
         const response = await fetch("http://localhost:5678/api/users/login", {
             method: "POST",
@@ -34,7 +37,7 @@ form.addEventListener("submit", async (event) => {
 
 
         /* -------------------------------------------------------------
-         * 3. HANDLE CLIENT / SERVER ERRORS
+         * 3. GESTION DES ERREURS DU CLIENT ET DU SERVEUR
          * ------------------------------------------------------------- */
         if (response.status === 401 || response.status === 404) {
             errorMessage.textContent = "E-mail ou mot de passe incorrect.";
@@ -46,7 +49,7 @@ form.addEventListener("submit", async (event) => {
         }
 
         /* -------------------------------------------------------------
-         * 4. HANDLE SUCCESSFUL AUTHENTICATION & REDIRECTION
+         * 4. CONNEXION RÉUSSIE ET REDIRECTION
          * ------------------------------------------------------------- */
         const result = await response.json();
         
@@ -60,7 +63,7 @@ form.addEventListener("submit", async (event) => {
 
     } catch (error) {
         /* -------------------------------------------------------------
-         * 5. CATCH NETWORK / UNEXPECTED ERRORS
+         * 5. GESTION DES ERREURS RÉSEAU OU INATTENDUES
          * ------------------------------------------------------------- */
         errorMessage.textContent = "Connexion impossible pour le moment. Veuillez réessayer.";
     } finally {
