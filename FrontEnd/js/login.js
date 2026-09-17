@@ -3,12 +3,17 @@
  * ================================================================= */
 const form = document.querySelector("#login-form");
 const errorMessage = document.querySelector("#login-error");
+const submitButton = form.querySelector('button[type="submit"]');
+let isSubmitting = false;
 
 /* =================================================================
  * EVENT LISTENER: FORM SUBMISSION & AUTHENTICATION
  * ================================================================= */
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (isSubmitting) return;
+    isSubmitting = true;
+    submitButton.disabled = true;
     errorMessage.textContent = "";
 
     /* -------------------------------------------------------------
@@ -45,8 +50,8 @@ form.addEventListener("submit", async (event) => {
          * ------------------------------------------------------------- */
         const result = await response.json();
         
-        if (!result.token) {
-            errorMessage.textContent = "E-mail ou mot de passe incorrect.";
+        if (typeof result?.token !== "string" || !result.token.trim()) {
+            errorMessage.textContent = "Réponse du serveur invalide. Veuillez réessayer.";
             return;
         }
 
@@ -58,5 +63,8 @@ form.addEventListener("submit", async (event) => {
          * 5. CATCH NETWORK / UNEXPECTED ERRORS
          * ------------------------------------------------------------- */
         errorMessage.textContent = "Connexion impossible pour le moment. Veuillez réessayer.";
+    } finally {
+        isSubmitting = false;
+        submitButton.disabled = false;
     }
 });

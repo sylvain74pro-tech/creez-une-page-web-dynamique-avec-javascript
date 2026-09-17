@@ -11,8 +11,12 @@ const editProjectsBtn = document.querySelector("#edit-projects");
 /* =================================================================
  * 2. OUVERTURE / FERMETURE DE LA MODALE
  * ================================================================= */
+let modalReturnFocus = null;
+
 function openModal() {
+    modalReturnFocus = document.activeElement;
     modal.style.display = "flex";
+    closeBtn.focus();
     if (modal.querySelector(".modal-gallery")) {
         displayModalGallery();
     } else {
@@ -22,7 +26,48 @@ function openModal() {
 
 function closeModal() {
     modal.style.display = "none";
+    clearPhotoPreview();
+    if (modalReturnFocus?.isConnected) modalReturnFocus.focus();
 }
+
+function clearPhotoPreview() {
+    const preview = modalContent.querySelector(".upload-preview");
+    if (preview?.getAttribute("src")) {
+        URL.revokeObjectURL(preview.src);
+        preview.removeAttribute("src");
+        preview.hidden = true;
+    }
+}
+
+// Garder la navigation au clavier dans la fenêtre ouverte.
+document.addEventListener("keydown", (event) => {
+    if (modal.style.display === "none") return;
+    if (event.key === "Escape") {
+        event.preventDefault();
+        closeModal();
+        return;
+    }
+    if (event.key !== "Tab") return;
+    const focusable = Array.from(modal.querySelectorAll(
+        'a[href], button, input, select, textarea, [tabindex]'
+    )).filter((element) => !element.disabled && element.tabIndex >= 0 && element.getClientRects().length);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first) {
+        event.preventDefault();
+        return;
+    }
+    if (!modal.contains(document.activeElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+    } else if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+    }
+});
 
 // Ouverture depuis le bouton « modifier » du mode édition.
 editProjectsBtn?.addEventListener("click", openModal);
@@ -40,40 +85,54 @@ modal.addEventListener("click", (e) => {
  * ================================================================= */
 async function getWorks() {
     const response = await fetch("http://localhost:5678/api/works");
-    return await response.json();
+    if (!response.ok) throw new Error("Impossible de charger les projets.");
+    const works = await response.json();
+    if (!Array.isArray(works)) throw new Error("Liste des projets invalide.");
+    return works;
 }
 
 /* =================================================================
  * 4. AFFICHAGE DES TRAVAUX DANS LA MODALE
  * ================================================================= */
 async function displayModalGallery() {
-    const works = await getWorks();
-    modalGallery.innerHTML = "";
+    const targetGallery = modalGallery;
+    try {
+        const works = await getWorks();
+        if (!targetGallery.isConnected) return;
+        targetGallery.innerHTML = "";
 
-    works.forEach(work => {
-        const figure = document.createElement("figure");
-        figure.classList.add("modal-item");
-        figure.dataset.workId = String(work.id);
+        works.forEach(work => {
+            const figure = document.createElement("figure");
+            figure.classList.add("modal-item");
+            figure.dataset.workId = String(work.id);
 
-        const img = document.createElement("img");
-        img.src = work.imageUrl;
-        img.alt = work.title;
+            const img = document.createElement("img");
+            img.src = work.imageUrl;
+            img.alt = work.title;
 
-        const deleteBtn = document.createElement("button");
-        deleteBtn.type = "button";
-        deleteBtn.classList.add("delete-btn");
-        deleteBtn.setAttribute("aria-label", `Supprimer ${work.title}`);
-        deleteBtn.innerHTML = `
-            <svg aria-hidden="true" width="10" height="12" viewBox="0 0 448 512" fill="currentColor">
-                <path d="M135.2 17.7 140.6 0h166.8l5.4 17.7L328 32h88c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64s14.3-32 32-32h88l15.2-14.3zM32 128h384l-21.2 339.4C393.5 493 372.2 512 346.7 512H101.3c-25.5 0-46.8-19-48.1-44.6L32 128zm112 80v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16s-16 7.2-16 16zm128 0v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16s-16 7.2-16 16z" />
-            </svg>`;
+            const deleteBtn = document.createElement("button");
+            deleteBtn.type = "button";
+            deleteBtn.classList.add("delete-btn");
+            deleteBtn.setAttribute("aria-label", `Supprimer ${work.title}`);
+            deleteBtn.innerHTML = `
+                <svg aria-hidden="true" width="10" height="12" viewBox="0 0 448 512" fill="currentColor">
+                    <path d="M135.2 17.7 140.6 0h166.8l5.4 17.7L328 32h88c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64s14.3-32 32-32h88l15.2-14.3zM32 128h384l-21.2 339.4C393.5 493 372.2 512 346.7 512H101.3c-25.5 0-46.8-19-48.1-44.6L32 128zm112 80v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16s-16 7.2-16 16zm128 0v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16s-16 7.2-16 16z" />
+                </svg>`;
 
-        deleteBtn.addEventListener("click", () => deleteWork(work.id, deleteBtn));
+            deleteBtn.addEventListener("click", () => deleteWork(work.id, deleteBtn));
 
-        figure.appendChild(img);
-        figure.appendChild(deleteBtn);
-        modalGallery.appendChild(figure);
-    });
+            figure.appendChild(img);
+            figure.appendChild(deleteBtn);
+            targetGallery.appendChild(figure);
+        });
+    } catch (error) {
+        if (!targetGallery.isConnected) return;
+        const message = document.createElement("p");
+        message.setAttribute("role", "alert");
+        message.textContent = "Impossible de charger les projets. Fermez puis rouvrez la fenêtre pour réessayer.";
+        targetGallery.replaceChildren(message);
+        console.error(error);
+    }
 }
 
 /* =================================================================
@@ -169,7 +228,7 @@ function showAddPhotoForm() {
     const updateSubmitState = () => {
         const error = validatePhotoForm(form);
         submitButton.disabled = Boolean(error) || form.dataset.sending === "true";
-        message.textContent = error;
+        message.textContent = message.dataset.categoryError || error;
     };
 
     fileInput.addEventListener("change", () => {
@@ -189,9 +248,11 @@ function showAddPhotoForm() {
     loadPhotoCategories(categoryInput, message);
     modalContent.querySelector(".modal-back").addEventListener("click", showGallery);
     form.addEventListener("submit", uploadPhoto);
+    modalContent.querySelector(".modal-back").focus();
 }
 
 function showGallery() {
+    clearPhotoPreview();
     modalContent.innerHTML = `
         <h2 id="modal-title">Galerie photo</h2>
         <div class="modal-gallery"></div>
@@ -202,6 +263,7 @@ function showGallery() {
     modalGallery = modalContent.querySelector(".modal-gallery");
     modalContent.querySelector(".add-photo-btn").addEventListener("click", showAddPhotoForm);
     displayModalGallery();
+    modalContent.querySelector(".add-photo-btn").focus();
 }
 
 addPhotoBtn?.addEventListener("click", showAddPhotoForm);
@@ -230,6 +292,7 @@ function validatePhotoForm(form) {
 
 async function loadPhotoCategories(select, message) {
     select.disabled = true;
+    delete message.dataset.categoryError;
     try {
         const response = await fetch("http://localhost:5678/api/categories");
         if (!response.ok) throw new Error("Impossible de charger les catégories. Rouvrez le formulaire pour réessayer.");
@@ -245,7 +308,8 @@ async function loadPhotoCategories(select, message) {
         if (!categories.length) throw new Error("Aucune catégorie disponible.");
         select.disabled = false;
     } catch (error) {
-        message.textContent = "Impossible de charger les catégories. Rouvrez le formulaire pour réessayer.";
+        message.dataset.categoryError = "Impossible de charger les catégories. Rouvrez le formulaire pour réessayer.";
+        message.textContent = message.dataset.categoryError;
         console.error(error);
     }
 }

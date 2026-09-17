@@ -4,7 +4,29 @@
 const API_URL = "http://localhost:5678/api";
 const gallery = document.querySelector(".gallery");
 let selectedCategory = "all";
-const token = localStorage.getItem("token");
+// Ce contrôle améliore l'affichage ; seul le serveur valide la signature et les droits.
+function getUnexpiredToken() {
+  const storedToken = localStorage.getItem("token");
+  if (!storedToken) return null;
+
+  try {
+    const parts = storedToken.split(".");
+    if (parts.length !== 3 || parts.some((part) => !part)) {
+      throw new Error("Format de token incorrect.");
+    }
+    const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const paddedPayload = payload.padEnd(Math.ceil(payload.length / 4) * 4, "=");
+    const { exp } = JSON.parse(atob(paddedPayload));
+    if (Number.isFinite(exp) && exp * 1000 > Date.now()) return storedToken;
+  } catch {
+    // Une session illisible doit être remplacée par une nouvelle connexion.
+  }
+
+  localStorage.removeItem("token");
+  return null;
+}
+
+const token = getUnexpiredToken();
 const editBanner = document.querySelector(".edit-banner");
 const editProjects = document.querySelector("#edit-projects");
 const loginLink = document.querySelector("#login-link");
@@ -137,12 +159,12 @@ contactFields.forEach((field) => {
 });
 
 contactForm.addEventListener("submit", (event) => {
+  event.preventDefault();
   const emptyFields = contactFields.filter((field) => !field.value.trim());
   contactFields.forEach((field) => field.removeAttribute("aria-invalid"));
   contactError.textContent = "";
 
   if (emptyFields.length) {
-    event.preventDefault();
     contactError.textContent = "Veuillez remplir les trois champs : nom, e-mail et message.";
     emptyFields.forEach((field) => field.setAttribute("aria-invalid", "true"));
     emptyFields[0].focus();
@@ -151,9 +173,12 @@ contactForm.addEventListener("submit", (event) => {
 
   const emailField = contactFields[1];
   if (!emailField.validity.valid) {
-    event.preventDefault();
     contactError.textContent = "Veuillez saisir une adresse e-mail valide.";
     emailField.setAttribute("aria-invalid", "true");
     emailField.focus();
+    return;
   }
+
+  // Aucun service d'envoi de messages n'est disponible dans l'API actuelle.
+  contactError.textContent = "L'envoi de messages n'est pas encore disponible. Votre message n'a pas été envoyé.";
 });
