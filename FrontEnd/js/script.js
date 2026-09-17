@@ -1,6 +1,4 @@
-/* =================================================================
- * 1. CONSTANTS & GLOBALS
- * ================================================================= */
+// 1. Variables principales
 const API_URL = "http://localhost:5678/api";
 const gallery = document.querySelector(".gallery");
 let selectedCategory = "all";
@@ -32,9 +30,7 @@ const editProjects = document.querySelector("#edit-projects");
 const loginLink = document.querySelector("#login-link");
 const filters = document.querySelector(".filter-buttons");
 
-/* =================================================================
- * 2. WORKS DISPLAY & FETCHING
- * ================================================================= */
+// 2. Affichage et chargement des projets
 function displayWorks(works) {
   const fragment = document.createDocumentFragment();
 
@@ -73,9 +69,7 @@ async function loadWorks() {
   }
 }
 
-/* =================================================================
- * 3. AUTHENTICATION & ADMIN MODE MANAGEMENT
- * ================================================================= */
+// 3. Mode édition et déconnexion
 if (token) {
   editBanner.hidden = false;
   editProjects.hidden = false;
@@ -89,10 +83,8 @@ if (token) {
     window.location.href = "index.html"; 
   });
 }
- 
-/* =================================================================
- * 4. CATEGORIES FILTERING
- * ================================================================= */
+
+// 4. Filtres des catégories
 function applyFilter(category) {
   selectedCategory = category;
   filters.querySelectorAll(".filter-button").forEach((button) => {
@@ -116,7 +108,7 @@ async function loadCategories() {
     if (!response.ok) throw new Error("Impossible de récupérer les catégories.");
     const categories = await response.json();
     const fragment = document.createDocumentFragment();
-    
+
     categories.forEach((category) => {
       const button = document.createElement("button");
       button.type = "button";
@@ -137,15 +129,11 @@ async function loadCategories() {
   }
 }
 
-/* =================================================================
- * 5. INITIALIZATION & DATA LOADING
- * ================================================================= */
+// 5. Chargement initial
 loadWorks();
 loadCategories();
 
-/* =================================================================
- * 6. VALIDATION DU FORMULAIRE DE CONTACT
- * ================================================================= */
+// 6. Vérification du formulaire de contact
 const contactForm = document.querySelector("#contact form");
 const contactError = document.querySelector("#contact-error");
 const contactFields = ["name", "email", "message"].map((id) =>
