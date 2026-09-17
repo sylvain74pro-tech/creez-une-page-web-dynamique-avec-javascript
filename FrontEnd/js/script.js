@@ -14,7 +14,7 @@ const filters = document.querySelector(".filter-buttons");
  * 2. WORKS DISPLAY & FETCHING
  * ================================================================= */
 function displayWorks(works) {
-  gallery.innerHTML = "";
+  const fragment = document.createDocumentFragment();
 
   works.forEach((work) => {
     const figure = document.createElement("figure");
@@ -30,8 +30,25 @@ function displayWorks(works) {
     caption.textContent = work.title;
 
     figure.append(image, caption);
-    gallery.appendChild(figure);
+    fragment.appendChild(figure);
   });
+
+  gallery.replaceChildren(fragment);
+}
+
+async function loadWorks() {
+  try {
+    const response = await fetch(`${API_URL}/works`);
+    if (!response.ok) throw new Error("Impossible de récupérer les projets.");
+    const works = await response.json();
+    displayWorks(works);
+  } catch (error) {
+    const message = document.createElement("p");
+    message.setAttribute("role", "status");
+    message.textContent = "Les projets sont indisponibles. Veuillez réessayer plus tard.";
+    gallery.replaceChildren(message);
+    console.error(error);
+  }
 }
 
 /* =================================================================
@@ -76,6 +93,7 @@ async function loadCategories() {
     const response = await fetch(`${API_URL}/categories`);
     if (!response.ok) throw new Error("Impossible de récupérer les catégories.");
     const categories = await response.json();
+    const fragment = document.createDocumentFragment();
     
     categories.forEach((category) => {
       const button = document.createElement("button");
@@ -84,8 +102,10 @@ async function loadCategories() {
       button.dataset.category = String(category.id);
       button.textContent = category.name;
       button.setAttribute("aria-pressed", "false");
-      filters.appendChild(button);
+      fragment.appendChild(button);
     });
+
+    filters.appendChild(fragment);
   } catch (error) {
     const message = document.createElement("p");
     message.setAttribute("role", "status");
@@ -100,3 +120,40 @@ async function loadCategories() {
  * ================================================================= */
 loadWorks();
 loadCategories();
+
+/* =================================================================
+ * 6. VALIDATION DU FORMULAIRE DE CONTACT
+ * ================================================================= */
+const contactForm = document.querySelector("#contact form");
+const contactError = document.querySelector("#contact-error");
+const contactFields = ["name", "email", "message"].map((id) =>
+  contactForm.querySelector(`#${id}`)
+);
+
+// Afficher les erreurs dans la page, y compris pour un champ rempli d'espaces.
+contactForm.noValidate = true;
+contactFields.forEach((field) => {
+  field.required = true;
+});
+
+contactForm.addEventListener("submit", (event) => {
+  const emptyFields = contactFields.filter((field) => !field.value.trim());
+  contactFields.forEach((field) => field.removeAttribute("aria-invalid"));
+  contactError.textContent = "";
+
+  if (emptyFields.length) {
+    event.preventDefault();
+    contactError.textContent = "Veuillez remplir les trois champs : nom, e-mail et message.";
+    emptyFields.forEach((field) => field.setAttribute("aria-invalid", "true"));
+    emptyFields[0].focus();
+    return;
+  }
+
+  const emailField = contactFields[1];
+  if (!emailField.validity.valid) {
+    event.preventDefault();
+    contactError.textContent = "Veuillez saisir une adresse e-mail valide.";
+    emailField.setAttribute("aria-invalid", "true");
+    emailField.focus();
+  }
+});
