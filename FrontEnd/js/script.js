@@ -167,6 +167,5 @@ contactForm.addEventListener("submit", (event) => {
     return;
   }
 
-  // Aucun service d'envoi de messages n'est disponible dans l'API actuelle.
-  contactError.textContent = "L'envoi de messages n'est pas encore disponible. Votre message n'a pas été envoyé.";
+  contactForm.reset();
 });
