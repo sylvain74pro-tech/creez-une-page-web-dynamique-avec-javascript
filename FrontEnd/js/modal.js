@@ -1,243 +1,351 @@
-// Sélection des éléments de la modale (protégés pour Jest)
-const modal = typeof document !== "undefined" ? document.getElementById("modal") : null;
-const editProjectsBtn = typeof document !== "undefined" ? document.getElementById("edit-projects") : null;
-const closeModalBtns = typeof document !== "undefined" ? document.querySelectorAll(".js-modal-close") : [];
-const modalGalleryView = typeof document !== "undefined" ? document.getElementById("modal-gallery-view") : null;
-const modalAddView = typeof document !== "undefined" ? document.getElementById("modal-add-view") : null;
-const addPhotoBtn = typeof document !== "undefined" ? document.getElementById("add-photo-btn") : null;
-const backBtn = typeof document !== "undefined" ? document.querySelector(".js-modal-back") : null;
+// 1. SÉLECTION DES ÉLÉMENTS HTML
+const modal = document.querySelector(".modal");
+const modalContent = document.querySelector(".modal-content");
+let modalGallery = document.querySelector(".modal-gallery");
+const closeBtn = document.querySelector(".modal-close");
+const addPhotoBtn = document.querySelector(".add-photo-btn");
+const editProjectsBtn = document.querySelector("#edit-projects");
 
-// Ouverture de la modale
-if (editProjectsBtn && modal) {
-    editProjectsBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        modal.style.display = "flex";
-        modal.setAttribute("aria-hidden", "false");
-        loadModalGallery();
-    });
+// 2. OUVERTURE / FERMETURE DE LA MODALE
+let modalReturnFocus = null;
+
+function openModal() {
+    modalReturnFocus = document.activeElement;
+    modal.style.display = "flex";
+    modal.setAttribute("aria-hidden", "false");
+    closeBtn.focus();
+    if (modal.querySelector(".modal-gallery")) {
+        displayModalGallery();
+    } else {
+        showGallery();
+    }
 }
 
-// Fermeture de la modale
 function closeModal() {
-    if (!modal) return;
     modal.style.display = "none";
     modal.setAttribute("aria-hidden", "true");
-    resetAddForm();
+    clearPhotoPreview();
+    if (modalReturnFocus?.isConnected) modalReturnFocus.focus();
 }
 
-closeModalBtns.forEach(btn => btn.addEventListener("click", closeModal));
-
-if (modal) {
-    modal.addEventListener("click", (e) => {
-        if (e.target === modal) closeModal();
-    });
+function clearPhotoPreview() {
+    const preview = modalContent.querySelector(".upload-preview");
+    if (preview?.getAttribute("src")) {
+        URL.revokeObjectURL(preview.src);
+        preview.removeAttribute("src");
+        preview.hidden = true;
+    }
 }
 
-// Passage à la vue "ajout"
-if (addPhotoBtn && modalGalleryView && modalAddView) {
-    addPhotoBtn.addEventListener("click", () => {
-        modalGalleryView.style.display = "none";
-        modalAddView.style.display = "block";
-        loadCategoriesInSelect();
-    });
+// Garder la navigation au clavier dans la fenêtre ouverte.
+document.addEventListener("keydown", (event) => {
+    if (modal.style.display === "none") return;
+    if (event.key === "Escape") {
+        event.preventDefault();
+        closeModal();
+        return;
+    }
+    if (event.key !== "Tab") return;
+    const focusable = Array.from(modal.querySelectorAll(
+        'a[href], button, input, select, textarea, [tabindex]'
+    )).filter((element) => !element.disabled && element.tabIndex >= 0 && element.getClientRects().length);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first) {
+        event.preventDefault();
+        return;
+    }
+    if (!modal.contains(document.activeElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+    } else if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+    }
+});
+
+// Ouverture depuis le bouton « modifier » du mode édition.
+editProjectsBtn?.addEventListener("click", openModal);
+
+// Fermeture en cliquant sur X
+closeBtn.addEventListener("click", closeModal);
+
+// Fermeture en cliquant hors de la modale
+modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+});
+
+// 3. RÉCUPÉRATION DES PROJETS
+async function getWorks() {
+    const response = await fetch("http://localhost:5678/api/works");
+    if (!response.ok) throw new Error("Impossible de charger les projets.");
+    const works = await response.json();
+    if (!Array.isArray(works)) throw new Error("Liste des projets invalide.");
+    return works;
 }
 
-// Retour à la galerie
-if (backBtn && modalGalleryView && modalAddView) {
-    backBtn.addEventListener("click", () => {
-        modalAddView.style.display = "none";
-        modalGalleryView.style.display = "block";
-        resetAddForm();
-    });
-}
-
-// Chargement de la galerie dans la modale
-async function loadModalGallery() {
-    if (!modal) return;
-
+// 4. AFFICHAGE DES PROJETS DANS LA MODALE
+async function displayModalGallery() {
+    const targetGallery = modalGallery;
     try {
-        const response = await fetch(`${API_URL}/works`);
-        const works = await response.json();
-
-        const modalGallery = modal.querySelector(".modal-gallery");
-        if (!modalGallery) return;
-
-        modalGallery.innerHTML = "";
+        const works = await getWorks();
+        if (!targetGallery.isConnected) return;
+        targetGallery.innerHTML = "";
 
         works.forEach(work => {
             const figure = document.createElement("figure");
-            figure.innerHTML = `
-                <img src="${work.imageUrl}" alt="${work.title}">
-                <button class="delete-btn" data-id="${work.id}" aria-label="Supprimer">
-                    <i class="fa-solid fa-trash-can"></i>
-                </button>
-            `;
-            modalGallery.appendChild(figure);
+            figure.classList.add("modal-item");
+            figure.dataset.workId = String(work.id);
+
+            const img = document.createElement("img");
+            img.src = work.imageUrl;
+            img.alt = work.title;
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.type = "button";
+            deleteBtn.classList.add("delete-btn");
+            deleteBtn.setAttribute("aria-label", `Supprimer ${work.title}`);
+            deleteBtn.innerHTML = `
+                <svg aria-hidden="true" width="10" height="12" viewBox="0 0 448 512" fill="currentColor">
+                    <path d="M135.2 17.7 140.6 0h166.8l5.4 17.7L328 32h88c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64s14.3-32 32-32h88l15.2-14.3zM32 128h384l-21.2 339.4C393.5 493 372.2 512 346.7 512H101.3c-25.5 0-46.8-19-48.1-44.6L32 128zm112 80v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16s-16 7.2-16 16zm128 0v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16s-16 7.2-16 16z" />
+                </svg>`;
+
+            deleteBtn.addEventListener("click", () => deleteWork(work.id, deleteBtn));
+
+            figure.appendChild(img);
+            figure.appendChild(deleteBtn);
+            targetGallery.appendChild(figure);
         });
-
-        document.querySelectorAll(".delete-btn").forEach(btn => {
-            btn.addEventListener("click", async (e) => {
-                e.preventDefault();
-
-                const workId = btn.dataset.id;
-                const authToken = localStorage.getItem("token");
-
-                try {
-                    const deleteRes = await fetch(`${API_URL}/works/${workId}`, {
-                        method: "DELETE",
-                        headers: { "Authorization": `Bearer ${authToken}` }
-                    });
-
-                    if (deleteRes.ok) {
-                        loadModalGallery();
-                        loadWorks();
-                    }
-                } catch (err) {
-                    console.error("Erreur suppression", err);
-                }
-            });
-        });
-    } catch (err) {
-        console.error("Erreur chargement modale", err);
+    } catch (error) {
+        if (!targetGallery.isConnected) return;
+        const message = document.createElement("p");
+        message.setAttribute("role", "alert");
+        message.textContent = "Impossible de charger les projets. Fermez puis rouvrez la fenêtre pour réessayer.";
+        targetGallery.replaceChildren(message);
+        console.error(error);
     }
 }
 
-// Chargement des catégories dans le select
-async function loadCategoriesInSelect() {
-    if (typeof document === "undefined") return;
-
-    const select = document.getElementById("work-category");
-    if (!select) return;
-
-    select.innerHTML = '<option value="" disabled selected></option>';
+// 5. SUPPRESSION D'UNE PHOTO
+async function deleteWork(id, button) {
+    if (button?.disabled) return;
+    if (button) button.disabled = true;
+    modalContent.querySelector(".delete-error")?.remove();
 
     try {
-        const res = await fetch(`${API_URL}/categories`);
-        const categories = await res.json();
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("Veuillez vous reconnecter pour supprimer un projet.");
 
-        categories.forEach(cat => {
+        const response = await fetch(`http://localhost:5678/api/works/${id}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            throw new Error(response.status === 401 || response.status === 403
+                ? "Votre connexion ne permet pas cette suppression. Veuillez vous reconnecter."
+                : "La suppression a échoué. Veuillez réessayer.");
+        }
+
+        // Retirer les deux représentations uniquement après confirmation du serveur.
+        document.querySelectorAll(".gallery figure, .modal-gallery figure").forEach((card) => {
+            if (card.dataset.workId === String(id)) card.remove();
+        });
+    } catch (error) {
+        modalContent.querySelector(".delete-error")?.remove();
+        const message = document.createElement("p");
+        message.className = "delete-error";
+        message.setAttribute("role", "alert");
+        message.textContent = error instanceof TypeError
+            ? "Le serveur est inaccessible. Veuillez réessayer."
+            : error.message;
+        modalContent.appendChild(message);
+        console.error(error);
+    } finally {
+        if (button) button.disabled = false;
+    }
+}
+
+// 6. PASSAGE À LA MODALE "AJOUTER UNE PHOTO" ET NAVIGATION
+function showAddPhotoForm() {
+    modalContent.innerHTML = `
+        <button class="modal-back" type="button" aria-label="Retour à la galerie">
+            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5l-7 7 7 7M5 12h14" />
+            </svg>
+        </button>
+        <h2 id="modal-title">Ajout photo</h2>
+
+        <form id="add-photo-form" class="add-photo-form" novalidate>
+            <div class="upload-area">
+                <svg class="upload-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                    <circle cx="8.5" cy="9" r="1.5"></circle>
+                    <path d="m21 15-5-5L5 20"></path>
+                </svg>
+                <label for="photo-file">+ Ajouter photo</label>
+                <input type="file" id="photo-file" accept="image/png, image/jpeg" required>
+                <small>jpg, png : 4 Mo max</small>
+                <img class="upload-preview" alt="Aperçu de la photo" hidden>
+            </div>
+
+            <label for="photo-title">Titre</label>
+            <input type="text" id="photo-title" required>
+
+            <label for="photo-category">Catégorie</label>
+            <select id="photo-category" required>
+                <option value="" selected disabled></option>
+            </select>
+
+            <p class="upload-error" role="alert"></p>
+            <div class="add-photo-submit">
+                <button type="submit" disabled>Valider</button>
+            </div>
+        </form>
+    `;
+
+    const form = modalContent.querySelector("#add-photo-form");
+    const fileInput = modalContent.querySelector("#photo-file");
+    const titleInput = modalContent.querySelector("#photo-title");
+    const categoryInput = modalContent.querySelector("#photo-category");
+    const submitButton = form.querySelector("button[type='submit']");
+    const preview = modalContent.querySelector(".upload-preview");
+    const message = form.querySelector(".upload-error");
+
+    const updateSubmitState = () => {
+        const error = validatePhotoForm(form);
+        submitButton.disabled = Boolean(error) || form.dataset.sending === "true";
+        message.textContent = message.dataset.categoryError || error;
+    };
+
+    fileInput.addEventListener("change", () => {
+        if (preview.getAttribute("src")) URL.revokeObjectURL(preview.src);
+        preview.removeAttribute("src");
+        preview.hidden = true;
+        const file = fileInput.files[0];
+        if (file && !validatePhotoFile(file)) {
+            preview.src = URL.createObjectURL(file);
+            preview.hidden = false;
+        }
+        updateSubmitState();
+    });
+
+    titleInput.addEventListener("input", updateSubmitState);
+    categoryInput.addEventListener("change", updateSubmitState);
+    loadPhotoCategories(categoryInput, message);
+    modalContent.querySelector(".modal-back").addEventListener("click", showGallery);
+    form.addEventListener("submit", uploadPhoto);
+    modalContent.querySelector(".modal-back").focus();
+}
+
+function showGallery() {
+    clearPhotoPreview();
+    modalContent.innerHTML = `
+        <h2 id="modal-title">Galerie photo</h2>
+        <div class="modal-gallery"></div>
+        <div class="modal-actions">
+            <button class="add-photo-btn" type="button">Ajouter une photo</button>
+        </div>
+    `;
+    modalGallery = modalContent.querySelector(".modal-gallery");
+    modalContent.querySelector(".add-photo-btn").addEventListener("click", showAddPhotoForm);
+    displayModalGallery();
+    modalContent.querySelector(".add-photo-btn").focus();
+}
+
+addPhotoBtn?.addEventListener("click", showAddPhotoForm);
+
+// 7. ENVOI ET VALIDATION D'UNE NOUVELLE PHOTO
+function validatePhotoFile(file) {
+    if (!file) return "Sélectionnez une image.";
+    if (!["image/jpeg", "image/png"].includes(file.type)) return "Choisissez une image JPG ou PNG.";
+    if (file.size > 4 * 1024 * 1024) return "L’image ne doit pas dépasser 4 Mo.";
+    if (!file.size) return "Le fichier image est vide.";
+    return "";
+}
+
+function validatePhotoForm(form) {
+    const fileError = validatePhotoFile(form.querySelector("#photo-file").files[0]);
+    if (fileError) return fileError;
+    if (!form.querySelector("#photo-title").value.trim()) return "Renseignez un titre.";
+    const select = form.querySelector("#photo-category");
+    if (!select.value || !Array.from(select.options).some(option => !option.disabled && option.value === select.value)) {
+        return "Choisissez une catégorie.";
+    }
+    return "";
+}
+
+async function loadPhotoCategories(select, message) {
+    select.disabled = true;
+    delete message.dataset.categoryError;
+    try {
+        const response = await fetch("http://localhost:5678/api/categories");
+        if (!response.ok) throw new Error("Impossible de charger les catégories. Rouvrez le formulaire pour réessayer.");
+        const categories = await response.json();
+
+        categories.forEach(category => {
             const option = document.createElement("option");
-            option.value = cat.id;
-            option.textContent = cat.name;
+            option.value = String(category.id);
+            option.textContent = category.name;
             select.appendChild(option);
         });
-    } catch (err) {
-        console.error("Erreur catégories select", err);
+
+        if (!categories.length) throw new Error("Aucune catégorie disponible.");
+        select.disabled = false;
+    } catch (error) {
+        message.dataset.categoryError = "Impossible de charger les catégories. Rouvrez le formulaire pour réessayer.";
+        message.textContent = message.dataset.categoryError;
+        console.error(error);
     }
 }
 
-// Gestion du formulaire d’ajout
-const fileInput = typeof document !== "undefined" ? document.getElementById("file-upload") : null;
-const filePreview = typeof document !== "undefined" ? document.getElementById("file-preview") : null;
-const uploadBox = typeof document !== "undefined" ? document.querySelector(".upload-box") : null;
-const addWorkForm = typeof document !== "undefined" ? document.getElementById("add-work-form") : null;
-const validateBtn = typeof document !== "undefined" ? document.getElementById("validate-btn") : null;
-const titleInput = typeof document !== "undefined" ? document.getElementById("work-title") : null;
-const categorySelect = typeof document !== "undefined" ? document.getElementById("work-category") : null;
+async function uploadPhoto(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.dataset.sending === "true") return;
 
-// Prévisualisation du fichier
-if (fileInput && uploadBox && filePreview) {
-    fileInput.addEventListener("change", (e) => {
-        const file = e.target.files[0];
+    const message = form.querySelector(".upload-error");
+    const validationError = validatePhotoForm(form);
+    message.textContent = validationError;
+    if (validationError) return;
 
-        if (file) {
-            filePreview.src = URL.createObjectURL(file);
-            filePreview.style.display = "block";
+    const submit = form.querySelector("button[type='submit']");
+    form.dataset.sending = "true";
+    submit.disabled = true;
 
-            uploadBox.querySelector(".fa-image").style.display = "none";
-            uploadBox.querySelector(".upload-btn").style.display = "none";
-            uploadBox.querySelector("p").style.display = "none";
-
-            checkFormValidity();
-        }
-    });
-}
-
-// Vérification du formulaire
-if (titleInput && categorySelect) {
-    [titleInput, categorySelect].forEach(element => {
-        element.addEventListener("input", checkFormValidity);
-        element.addEventListener("change", checkFormValidity);
-    });
-}
-
-function checkFormValidity() {
-    if (!fileInput || !titleInput || !categorySelect || !validateBtn) return;
-
-    const isValid =
-        fileInput.files[0] &&
-        titleInput.value.trim() !== "" &&
-        categorySelect.value !== "";
-
-    if (isValid) {
-        validateBtn.style.backgroundColor = "#1D6154";
-        validateBtn.removeAttribute("disabled");
-    } else {
-        validateBtn.style.backgroundColor = "#A7A7A7";
-        validateBtn.setAttribute("disabled", "true");
-    }
-}
-
-// Soumission du formulaire
-if (addWorkForm) {
-    addWorkForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("Veuillez vous reconnecter pour ajouter un projet.");
 
         const formData = new FormData();
-        formData.append("image", fileInput.files[0]);
-        formData.append("title", titleInput.value);
-        formData.append("category", categorySelect.value);
+        formData.append("image", form.querySelector("#photo-file").files[0]);
+        formData.append("title", form.querySelector("#photo-title").value.trim());
+        formData.append("category", form.querySelector("#photo-category").value);
 
-        const authToken = localStorage.getItem("token");
-        const errorMsg = document.getElementById("form-error");
+        const response = await fetch("http://localhost:5678/api/works", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${token}` },
+            body: formData
+        });
 
-        try {
-            const res = await fetch(`${API_URL}/works`, {
-                method: "POST",
-                headers: { "Authorization": `Bearer ${authToken}` },
-                body: formData
-            });
-
-            if (res.ok) {
-                closeModal();
-                loadWorks();
-            } else {
-                if (errorMsg) {
-                    errorMsg.textContent = "Erreur lors de l'ajout.";
-                }
-            }
-        } catch (err) {
-            console.error(err);
+        if (!response.ok) {
+            throw new Error(response.status === 401 || response.status === 403
+                ? "Veuillez vous reconnecter pour ajouter un projet."
+                : "L’ajout a échoué. Vérifiez les champs et réessayez.");
         }
-    });
-}
 
-// Réinitialisation du formulaire
-function resetAddForm() {
-    if (!addWorkForm) return;
-
-    addWorkForm.reset();
-
-    if (filePreview) {
-        filePreview.style.display = "none";
-    }
-
-    if (uploadBox) {
-        uploadBox.querySelector(".fa-image").style.display = "block";
-        uploadBox.querySelector(".upload-btn").style.display = "block";
-        uploadBox.querySelector("p").style.display = "block";
-    }
-
-    if (validateBtn) {
-        validateBtn.style.backgroundColor = "#A7A7A7";
-        validateBtn.setAttribute("disabled", "true");
-    }
-
-    const errorMsg = typeof document !== "undefined"
-        ? document.getElementById("form-error")
-        : null;
-
-    if (errorMsg) {
-        errorMsg.textContent = "";
+        // Le serveur confirme l’enregistrement avant le retour à la galerie.
+        window.location.reload();
+    } catch (error) {
+        message.textContent = error instanceof TypeError
+            ? "Le serveur est inaccessible. Veuillez réessayer."
+            : error.message;
+        console.error(error);
+    } finally {
+        form.dataset.sending = "false";
+        submit.disabled = Boolean(validatePhotoForm(form));
     }
 }
