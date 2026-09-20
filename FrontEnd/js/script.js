@@ -1,171 +1,195 @@
-// 1. Variables principales
+// URL de l’API
 const API_URL = "http://localhost:5678/api";
-const gallery = document.querySelector(".gallery");
+
+// Sélection de la galerie (protégée pour Jest)
+const gallery = typeof document !== "undefined"
+    ? document.querySelector(".gallery")
+    : null;
+
 let selectedCategory = "all";
-// Ce contrôle améliore l'affichage ; seul le serveur valide la signature et les droits.
+
+// Vérification du token
 function getUnexpiredToken() {
-  const storedToken = localStorage.getItem("token");
-  if (!storedToken) return null;
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken) return null;
 
-  try {
-    const parts = storedToken.split(".");
-    if (parts.length !== 3 || parts.some((part) => !part)) {
-      throw new Error("Format de token incorrect.");
-    }
-    const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-    const paddedPayload = payload.padEnd(Math.ceil(payload.length / 4) * 4, "=");
-    const { exp } = JSON.parse(atob(paddedPayload));
-    if (Number.isFinite(exp) && exp * 1000 > Date.now()) return storedToken;
-  } catch {
-    // Une session illisible doit être remplacée par une nouvelle connexion.
-  }
+    try {
+        const parts = storedToken.split(".");
+        if (parts.length !== 3 || parts.some((part) => !part)) {
+            throw new Error("Format incorrect");
+        }
 
-  localStorage.removeItem("token");
-  return null;
+        const payload = parts[1]
+            .replace(/-/g, "+")
+            .replace(/_/g, "/");
+
+        const paddedPayload = payload.padEnd(
+            Math.ceil(payload.length / 4) * 4,
+            "="
+        );
+
+        const { exp } = JSON.parse(atob(paddedPayload));
+
+        if (Number.isFinite(exp) && exp * 1000 > Date.now()) {
+            return storedToken;
+        }
+    } catch {}
+
+    localStorage.removeItem("token");
+    return null;
 }
 
 const token = getUnexpiredToken();
-const editBanner = document.querySelector(".edit-banner");
-const editProjects = document.querySelector("#edit-projects");
-const loginLink = document.querySelector("#login-link");
-const filters = document.querySelector(".filter-buttons");
 
-// 2. Affichage et chargement des projets
-function displayWorks(works) {
-  const fragment = document.createDocumentFragment();
+// Sélection des éléments du mode édition
+const editBanner = typeof document !== "undefined"
+    ? document.getElementById("edit-banner")
+    : null;
 
-  works.forEach((work) => {
-    const figure = document.createElement("figure");
-    figure.dataset.workId = String(work.id);
-    figure.dataset.category = String(work.categoryId);
-    figure.hidden = selectedCategory !== "all" && figure.dataset.category !== selectedCategory;
+const editProjects = typeof document !== "undefined"
+    ? document.getElementById("edit-projects")
+    : null;
 
-    const image = document.createElement("img");
-    image.src = work.imageUrl;
-    image.alt = work.title;
+const loginLink = typeof document !== "undefined"
+    ? document.getElementById("login-link")
+    : null;
 
-    const caption = document.createElement("figcaption");
-    caption.textContent = work.title;
+const filtersContainer = typeof document !== "undefined"
+    ? document.querySelector(".filter-buttons")
+    : null;
 
-    figure.append(image, caption);
-    fragment.appendChild(figure);
-  });
+// Activation du mode édition
+if (token && typeof document !== "undefined") {
+    if (editBanner) editBanner.hidden = false;
+    if (editProjects) editProjects.hidden = false;
+    if (filtersContainer) filtersContainer.hidden = true;
 
-  gallery.replaceChildren(fragment);
+    if (loginLink) {
+        loginLink.textContent = "logout";
+        loginLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            localStorage.removeItem("token");
+            window.location.reload();
+        });
+    }
 }
 
+// Chargement des projets
 async function loadWorks() {
-  try {
-    const response = await fetch(`${API_URL}/works`);
-    if (!response.ok) throw new Error("Impossible de récupérer les projets.");
-    const works = await response.json();
-    displayWorks(works);
-  } catch (error) {
-    const message = document.createElement("p");
-    message.setAttribute("role", "status");
-    message.textContent = "Les projets sont indisponibles. Veuillez réessayer plus tard.";
-    gallery.replaceChildren(message);
-    console.error(error);
-  }
+    try {
+        const response = await fetch(`${API_URL}/works`);
+        if (!response.ok) throw new Error("Erreur réseau");
+
+        const works = await response.json();
+        displayWorks(works);
+    } catch (error) {
+        console.error(error);
+
+        if (gallery) {
+            gallery.innerHTML =
+                "<p role='status'>Impossible de charger les projets.</p>";
+        }
+    }
 }
 
-// 3. Mode édition et déconnexion
-if (token) {
-  editBanner.hidden = false;
-  editProjects.hidden = false;
-  filters.hidden = true;
-  loginLink.textContent = "logout";
-  loginLink.href = "#";
+// Affichage des projets
+function displayWorks(works) {
+    if (!gallery) return;
 
-  loginLink.addEventListener("click", (event) => {
-    event.preventDefault();
-    localStorage.removeItem("token");
-    window.location.href = "index.html"; 
-  });
-}
-
-// 4. Filtres des catégories
-function applyFilter(category) {
-  selectedCategory = category;
-  filters.querySelectorAll(".filter-button").forEach((button) => {
-    const active = button.dataset.category === category;
-    button.classList.toggle("is-active", active);
-    button.setAttribute("aria-pressed", String(active));
-  });
-  gallery.querySelectorAll("figure").forEach((card) => {
-    card.hidden = category !== "all" && card.dataset.category !== category;
-  });
-}
-
-filters.addEventListener("click", (event) => {
-  const button = event.target.closest(".filter-button");
-  if (button && filters.contains(button)) applyFilter(button.dataset.category);
-});
-
-async function loadCategories() {
-  try {
-    const response = await fetch(`${API_URL}/categories`);
-    if (!response.ok) throw new Error("Impossible de récupérer les catégories.");
-    const categories = await response.json();
     const fragment = document.createDocumentFragment();
 
-    categories.forEach((category) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "filter-button";
-      button.dataset.category = String(category.id);
-      button.textContent = category.name;
-      button.setAttribute("aria-pressed", "false");
-      fragment.appendChild(button);
+    works.forEach((work) => {
+        const figure = document.createElement("figure");
+
+        figure.dataset.workId = String(work.id);
+        figure.dataset.category = String(work.categoryId);
+
+        figure.hidden =
+            selectedCategory !== "all" &&
+            figure.dataset.category !== selectedCategory;
+
+        const image = document.createElement("img");
+        image.src = work.imageUrl;
+        image.alt = work.title;
+
+        const caption = document.createElement("figcaption");
+        caption.textContent = work.title;
+
+        figure.append(image, caption);
+        fragment.appendChild(figure);
     });
 
-    filters.appendChild(fragment);
-  } catch (error) {
-    const message = document.createElement("p");
-    message.setAttribute("role", "status");
-    message.textContent = "Les filtres par catégorie sont indisponibles. Tous les projets restent consultables.";
-    filters.appendChild(message);
-    console.error(error);
-  }
+    gallery.replaceChildren(fragment);
 }
 
-// 5. Chargement initial
-loadWorks();
-loadCategories();
+// Chargement des catégories
+async function loadCategories() {
+    try {
+        const response = await fetch(`${API_URL}/categories`);
+        if (!response.ok) throw new Error("Erreur catégories");
 
-// 6. Vérification du formulaire de contact
-const contactForm = document.querySelector("#contact form");
-const contactError = document.querySelector("#contact-error");
-const contactFields = ["name", "email", "message"].map((id) =>
-  contactForm.querySelector(`#${id}`)
-);
+        const categories = await response.json();
+        setupFilters(categories);
+    } catch (error) {
+        console.error(error);
+    }
+}
 
-// Afficher les erreurs dans la page, y compris pour un champ rempli d'espaces.
-contactForm.noValidate = true;
-contactFields.forEach((field) => {
-  field.required = true;
-});
+// Création des boutons de filtre
+function setupFilters(categories) {
+    if (!filtersContainer) return;
 
-contactForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const emptyFields = contactFields.filter((field) => !field.value.trim());
-  contactFields.forEach((field) => field.removeAttribute("aria-invalid"));
-  contactError.textContent = "";
+    const allButton = document.createElement("button");
+    allButton.textContent = "Tous";
+    allButton.classList.add("filter-btn", "is-active");
+    allButton.dataset.category = "all";
 
-  if (emptyFields.length) {
-    contactError.textContent = "Veuillez remplir les trois champs : nom, e-mail et message.";
-    emptyFields.forEach((field) => field.setAttribute("aria-invalid", "true"));
-    emptyFields[0].focus();
-    return;
-  }
+    allButton.addEventListener("click", () => {
+        applyFilter("all", allButton);
+    });
 
-  const emailField = contactFields[1];
-  if (!emailField.validity.valid) {
-    contactError.textContent = "Veuillez saisir une adresse e-mail valide.";
-    emailField.setAttribute("aria-invalid", "true");
-    emailField.focus();
-    return;
-  }
+    filtersContainer.appendChild(allButton);
 
-  contactForm.reset();
-});
+    categories.forEach((cat) => {
+        const btn = document.createElement("button");
+
+        btn.textContent = cat.name;
+        btn.classList.add("filter-btn");
+        btn.dataset.category = String(cat.id);
+
+        btn.addEventListener("click", () => {
+            applyFilter(String(cat.id), btn);
+        });
+
+        filtersContainer.appendChild(btn);
+    });
+}
+
+// Application du filtre
+function applyFilter(categoryId, activeBtn) {
+    selectedCategory = categoryId;
+
+    if (typeof document === "undefined") return;
+
+    document.querySelectorAll(".filter-btn").forEach((btn) => {
+        btn.classList.remove("is-active");
+    });
+
+    activeBtn.classList.add("is-active");
+
+    document.querySelectorAll(".gallery figure").forEach((figure) => {
+        const matches =
+            selectedCategory === "all" ||
+            figure.dataset.category === selectedCategory;
+
+        figure.hidden = !matches;
+    });
+}
+
+// Chargement initial
+if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", () => {
+        loadWorks();
+        loadCategories();
+    });
+}

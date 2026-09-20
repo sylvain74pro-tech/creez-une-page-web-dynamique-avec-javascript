@@ -1,57 +1,44 @@
-// CONSTANTES ET SÉLECTION DES ÉLÉMENTS HTML
-const form = document.querySelector("#login-form");
-const errorMessage = document.querySelector("#login-error");
-const submitButton = form.querySelector('button[type="submit"]');
-let isSubmitting = false;
+// URL de l’API
+const API_URL = "http://localhost:5678/api";
 
-// SOUMISSION DU FORMULAIRE ET AUTHENTIFICATION
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  if (isSubmitting) return;
-  isSubmitting = true;
-  submitButton.disabled = true;
-  errorMessage.textContent = "";
+// Sélection du formulaire (protégé pour Jest)
+const loginForm = typeof document !== "undefined"
+    ? document.getElementById("login-form")
+    : null;
 
-  // 1. RÉCUPÉRATION DES IDENTIFIANTS
-  const email = document.querySelector("#email").value;
-  const password = document.querySelector("#password").value;
+// Gestion de la soumission du formulaire
+if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-  // 2. ENVOI DE LA DEMANDE DE CONNEXION
-  try {
-    const response = await fetch("http://localhost:5678/api/users/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password })
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const errorDiv = document.getElementById("login-error");
+
+        if (!emailInput || !passwordInput) return;
+
+        const email = emailInput.value;
+        const password = passwordInput.value;
+
+        try {
+            const response = await fetch(`${API_URL}/users/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (!response.ok) throw new Error("Identifiants incorrects");
+
+            const data = await response.json();
+            localStorage.setItem("token", data.token);
+
+            if (typeof window !== "undefined") {
+                window.location.href = "index.html";
+            }
+        } catch (error) {
+            if (errorDiv) {
+                errorDiv.textContent = "Erreur dans l'identifiant ou le mot de passe.";
+            }
+        }
     });
-
-    // 3. GESTION DES ERREURS DU CLIENT ET DU SERVEUR
-    if (response.status === 401 || response.status === 404) {
-      errorMessage.textContent = "E-mail ou mot de passe incorrect.";
-      return;
-    }
-
-    if (!response.ok) {
-      throw new Error("Erreur du serveur");
-    }
-
-    // 4. CONNEXION RÉUSSIE ET REDIRECTION
-    const result = await response.json();
-
-    if (typeof result?.token !== "string" || !result.token.trim()) {
-      errorMessage.textContent = "Réponse du serveur invalide. Veuillez réessayer.";
-      return;
-    }
-
-    localStorage.setItem("token", result.token);
-    window.location.href = "index.html";
-
-  } catch (error) {
-    // 5. GESTION DES ERREURS RÉSEAU OU INATTENDUES
-    errorMessage.textContent = "Connexion impossible pour le moment. Veuillez réessayer.";
-  } finally {
-    isSubmitting = false;
-    submitButton.disabled = false;
-  }
-});
+}
