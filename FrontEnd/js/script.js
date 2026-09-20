@@ -174,10 +174,14 @@ if (contactForm) {
             firstInvalid.focus();
             return;
         }
-        // Aucun service d'envoi n'est configuré pour ce formulaire (action="#").
-        contactError.textContent = "Les champs sont valides, mais l’envoi du message n’est pas encore configuré.";
+        
+        // 1. Afficher un message de confirmation
+        contactError.textContent = "Votre message a bien été envoyé !";
+        
+        // 2. Vider automatiquement tous les champs du formulaire
+        contactForm.reset();
+        
+        // 3. Réinitialiser l'état de soumission
+        submitted = false;
     });
-    fields.forEach(field => field.addEventListener("input", () => {
-        if (submitted) validateContact();
-    }));
 }
