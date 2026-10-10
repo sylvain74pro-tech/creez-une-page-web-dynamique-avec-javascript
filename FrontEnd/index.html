@@ -35,15 +35,16 @@
                 <img src="./assets/images/sophie-bluel.png" alt="Photo de Sophie Bluel">
             </figure>
             <article>
-                <h2>Design d'espace</h2>
-                <p>Je raconte des histoires, je donne vie à vos visions. Chaque projet est une pièce unique, résolument fonctionnelle, esthétique et durable.</p>
-                <p>L'art de l'essentiel : la place de l'objet dans l'espace, l'équilibre des volumes et des couleurs, la lumière comme matériau vivant.</p>
+                <h2>Designer d’espace</h2>
+                <p>Je raconte votre histoire, je valorise vos idées. Je vous accompagne de la conception à la livraison finale du chantier.</p>
+                <p>Chaque projet sera étudié en commun, de façon à mettre en valeur les volumes, les matières et les couleurs dans le respect de l’esprit des lieux, et le choix adapté des matériaux. Le suivi du chantier sera assuré dans le souci du détail, le respect du planning et du budget.</p>
+                <p>En cas de besoin, une équipe pluridisciplinaire peut être constituée : architecte DPLG, décorateur(trice).</p>
             </article>
         </section>
 
         <section id="portfolio">
             <div class="portfolio-heading">
-                <h2>Mes Projets</h2>
+                <h2>Mes projets</h2>
                 <button id="edit-projects" class="edit-projects" hidden>
                     <i class="fa-regular fa-pen-to-square"></i> modifier
                 </button>
@@ -54,13 +55,13 @@
         </section>
 
         <section id="contact">
-            <h2>Contactez-moi</h2>
+            <h2>Contact</h2>
             <p>Vous avez un projet ? Discutons-en !</p>
             <form id="contact-form" action="#" method="post">
                 <label for="name">Nom</label>
                 <input type="text" name="name" id="name">
                 
-                <label for="email">Email</label>
+                <label for="email">E-mail</label>
                 <input type="email" name="email" id="email">
                 
                 <label for="message">Message</label>
@@ -84,6 +85,33 @@
     <aside id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display: none;">
         <div class="modal-wrapper">
             <button class="modal-close" type="button" aria-label="Fermer">&times;</button>
+            <!-- Formulaire masqué : son affichage sera programmé dans modal.js. -->
+            <div id="ajout-photo" hidden>
+                <h2 id="titre-ajout">Ajout photo</h2>
+                <form id="form-ajout-photo" class="add-photo-form">
+                    <div class="upload-area">
+                        <i class="fa-regular fa-image upload-icon" aria-hidden="true"></i>
+                        <label for="photo">+ Ajouter photo</label>
+                        <input type="file" id="photo" name="image" accept="image/jpeg,image/png" aria-label="Choisir une photo JPG ou PNG" aria-describedby="photo-formats" required>
+                        <small id="photo-formats">jpg, png : 4 Mo max</small>
+                        <img id="apercu-photo" class="upload-preview" alt="Aperçu de la photo sélectionnée" hidden>
+                    </div>
+
+                    <label for="titre-photo">Titre</label>
+                    <input type="text" id="titre-photo" name="title" required>
+
+                    <label for="categorie-photo">Catégorie</label>
+                    <select id="categorie-photo" name="category" required>
+                        <option value="">Choisir une catégorie</option>
+                    </select>
+
+                    <p id="erreur-ajout" class="error-msg" role="status"></p>
+                    <div class="add-photo-submit">
+                        <button type="submit" disabled>Valider</button>
+                    </div>
+                </form>
+                <button id="retour-galerie" type="button" aria-label="Retour à la galerie photo"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
+            </div>
             <div class="modal-content">
                 <h2 id="modal-title">Galerie photo</h2>
                 <div class="modal-gallery"></div>
@@ -99,3 +127,4 @@
     <script src="./js/modal.js"></script>
 </body>
 </html>
+
