@@ -213,13 +213,26 @@ const boutonValider = formulaireAjout.querySelector('button[type="submit"]');
 let envoiEnCours = false;
 
 // Le bouton devient actif seulement lorsque le formulaire est prêt.
-function actualiserBoutonValider() {
+function actualiserBoutonValider(evenement) {
   const fichier = champPhoto.files[0];
   const photoValide = fichier
     && ["image/jpeg", "image/png"].includes(fichier.type)
     && fichier.size <= 4 * 1024 * 1024;
   boutonValider.disabled = envoiEnCours || !photoValide
     || !titrePhoto.value.trim() || !categoriePhoto.value;
+
+  // Expliquer les champs manquants après une interaction avec le formulaire.
+  // Les erreurs de format et de taille restent gérées au choix du fichier.
+  if (evenement && !envoiEnCours && (!fichier || photoValide)) {
+    const champsManquants = [];
+    if (!fichier) champsManquants.push("une photo");
+    if (!titrePhoto.value.trim()) champsManquants.push("un titre");
+    if (!categoriePhoto.value) champsManquants.push("une catégorie");
+
+    messageAjout.textContent = champsManquants.length
+      ? "Complète le formulaire : " + champsManquants.join(", ") + "."
+      : "";
+  }
 }
 formulaireAjout.addEventListener("input", actualiserBoutonValider);
 formulaireAjout.addEventListener("change", actualiserBoutonValider);
