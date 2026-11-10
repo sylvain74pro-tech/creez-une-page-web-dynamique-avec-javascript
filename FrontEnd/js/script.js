@@ -1,4 +1,4 @@
-// Afficher les éléments du mode édition si un token est présent.
+// Afficher le mode édition si un token est présent.
 const token = sessionStorage.getItem("token");
 const banniere = document.querySelector("#edit-banner");
 const boutonModifier = document.querySelector("#edit-projects");
@@ -8,7 +8,7 @@ if (token) {
   boutonModifier.hidden = false;
 }
 
-// Récupérer les projets du serveur et les afficher dans la galerie.
+// Récupérer les projets et remplir la galerie.
 async function chargerProjets() {
   try {
     const reponse = await fetch("http://localhost:5678/api/works");
@@ -21,7 +21,7 @@ async function chargerProjets() {
     const galerie = document.querySelector(".gallery");
     galerie.replaceChildren();
 
-    // Créer une photo et un titre pour chaque projet.
+    // Créer une image et un titre pour chaque projet.
     projets.forEach(function (projet) {
       const figure = document.createElement("figure");
       figure.dataset.categorie = String(projet.categoryId);
@@ -41,15 +41,15 @@ async function chargerProjets() {
   }
 }
 
-// Garder la catégorie choisie, même après ajout ou suppression de photo.
+// Mémoriser le filtre choisi.
 let categorieActive = "tous";
-// Aucun bouton coloré avant le premier clic.
+
 let filtreSelectionne = null;
 const zoneFiltres = document.querySelector(".filter-buttons");
-// Masquer les filtres en mode édition.
+
 zoneFiltres.hidden = Boolean(token);
 
-// Afficher uniquement les projets de la catégorie choisie.
+// Afficher les projets de la catégorie choisie.
 function filtrerProjets(categorie, clicUtilisateur = false) {
   if (clicUtilisateur) filtreSelectionne = String(categorie);
   categorieActive = String(categorie);
@@ -66,7 +66,7 @@ function filtrerProjets(categorie, clicUtilisateur = false) {
   });
 }
 
-// Créer un bouton de filtre et son action au clic.
+// Créer un bouton de filtre.
 function creerBoutonFiltre(nom, categorie) {
   const bouton = document.createElement("button");
   bouton.type = "button";
@@ -79,7 +79,7 @@ function creerBoutonFiltre(nom, categorie) {
   zoneFiltres.append(bouton);
 }
 
-// Récupérer les catégories réelles du serveur.
+// Charger les catégories et leurs boutons.
 async function chargerFiltres() {
   zoneFiltres.replaceChildren();
   creerBoutonFiltre("Tous", "tous");
@@ -100,13 +100,12 @@ async function chargerFiltres() {
   }
 }
 
-// Lancer le chargement à l’ouverture de la page.
+// Lancer le chargement de la page.
 chargerProjets();
 
 chargerFiltres();
 
-
-// Adapter le menu et permettre la déconnexion.
+// Permettre la déconnexion.
 const lienConnexion = document.querySelector("#login-link");
 
 if (token) {
@@ -115,12 +114,8 @@ if (token) {
   lienConnexion.addEventListener("click", function (evenement) {
     evenement.preventDefault();
 
-    // Retirer uniquement la preuve de connexion de cet onglet.
     sessionStorage.removeItem("token");
 
-    // Recharger la page en mode visiteur.
     window.location.href = "index.html";
   });
 }
-
-

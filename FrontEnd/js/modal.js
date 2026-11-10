@@ -1,8 +1,26 @@
+// Afficher une confirmation ou une erreur.
+function afficherMessageGalerie(texte, succes = false) {
+  let message = document.querySelector("#erreur-suppression");
+  if (!message) {
+    message = document.createElement("p");
+    message.id = "erreur-suppression";
+    message.className = "error-msg";
+    message.setAttribute("role", "status");
+    document.querySelector(".modal-content").append(message);
+  }
+  message.className = succes ? "modal-status" : "error-msg";
+  message.style.color = succes ? "#1d6154" : "";
+  message.style.textAlign = "center";
+  message.style.marginTop = "12px";
+  message.textContent = texte;
+}
+// Retrouver la fenêtre de modification.
 const modale = document.querySelector("#modal");
 const ouvrirModale = document.querySelector("#edit-projects");
-
+// Ouvrir la modale sur la galerie.
 ouvrirModale.addEventListener("click", function () {
-  // Revenir à la galerie à chaque ouverture de la modale.
+  afficherMessageGalerie("");
+
   vueAjout.hidden = true;
   vueGalerie.hidden = false;
   modale.setAttribute("aria-labelledby", "modal-title");
@@ -10,12 +28,14 @@ ouvrirModale.addEventListener("click", function () {
   modale.setAttribute("aria-hidden", "false");
   fermerModale.focus();
 });
+// Fermer la modale avec la croix.
 const fermerModale = document.querySelector(".modal-close");
 fermerModale.addEventListener("click", function () {
   modale.style.display = "none";
   modale.setAttribute("aria-hidden", "true");
   ouvrirModale.focus();
 });
+// Fermer la modale avec Échap.
 document.addEventListener("keydown", function (evenement) {
   if (evenement.key === "Escape" && modale.style.display === "flex") {
     modale.style.display = "none";
@@ -23,14 +43,17 @@ document.addEventListener("keydown", function (evenement) {
     ouvrirModale.focus();
   }
 });
+// Fermer la modale en cliquant sur le fond.
 modale.addEventListener("click", function (evenement) {
-    if (evenement.target === modale) {
-        modale.style.display = "none";
-        modale.setAttribute("aria-hidden", "true");
-        ouvrirModale.focus();
-    }
+  if (evenement.target === modale) {
+    modale.style.display = "none";
+    modale.setAttribute("aria-hidden", "true");
+    ouvrirModale.focus();
+  }
 });
 
+
+// Charger les photos dans la modale.
 async function chargerPhotosModale() {
   try {
     const reponse = await fetch("http://localhost:5678/api/works");
@@ -59,17 +82,19 @@ async function chargerPhotosModale() {
       boutonSupprimer.append(iconeSupprimer);
       boutonSupprimer.setAttribute("aria-label", "Supprimer " + projet.title);
 
-      // Supprimer uniquement après confirmation, avec la preuve de connexion.
+      // Demander la suppression de cette photo.
       boutonSupprimer.addEventListener("click", async function () {
         if (boutonSupprimer.disabled) return;
+
         const tokenConnexion = sessionStorage.getItem("token");
 
         if (!tokenConnexion) {
-          alert("Connecte-toi pour supprimer un projet.");
+          afficherMessageGalerie("Connecte-toi pour supprimer un projet.");
           return;
         }
 
-        if (!confirm("Supprimer le projet : " + projet.title + " ?")) return;
+
+        afficherMessageGalerie("");
         boutonSupprimer.disabled = true;
 
         try {
@@ -88,11 +113,12 @@ async function chargerPhotosModale() {
             throw new Error("La suppression a échoué.");
           }
 
-          // Recharger la galerie principale et celle de la modale.
+
           await chargerProjets();
           await chargerPhotosModale();
+          afficherMessageGalerie("Photo supprimée.", true);
         } catch (erreur) {
-          alert(erreur.message);
+          afficherMessageGalerie(erreur.message);
         } finally {
           boutonSupprimer.disabled = false;
         }
@@ -108,7 +134,7 @@ async function chargerPhotosModale() {
 
 chargerPhotosModale();
 
-// Récupérer les deux vues et leurs boutons.
+// Retrouver les deux vues et leurs boutons.
 const boutonAjouter = document.querySelector(".add-photo-btn");
 const vueGalerie = document.querySelector(".modal-content");
 const vueAjout = document.querySelector("#ajout-photo");
@@ -123,7 +149,7 @@ boutonAjouter.addEventListener("click", function () {
   document.querySelector("#photo").focus();
 });
 
-// Revenir aux photos.
+// Revenir à la galerie.
 boutonRetour.addEventListener("click", function () {
   vueAjout.hidden = true;
   vueGalerie.hidden = false;
@@ -131,7 +157,7 @@ boutonRetour.addEventListener("click", function () {
   modale.setAttribute("aria-labelledby", "modal-title");
   boutonAjouter.focus();
 });
-// Charger les catégories dans la liste du formulaire.
+// Remplir la liste des catégories.
 async function chargerCategories() {
   const liste = document.querySelector("#categorie-photo");
   const message = document.querySelector("#erreur-ajout");
@@ -145,7 +171,7 @@ async function chargerCategories() {
 
     const categories = await reponse.json();
 
-    // Conserver une option vide pour demander un choix.
+
     const choix = document.createElement("option");
     choix.value = "";
     choix.textContent = "Choisir une catégorie";
@@ -165,14 +191,16 @@ async function chargerCategories() {
 }
 
 chargerCategories();
-// Récupérer le champ fichier et l’image d’aperçu.
+// Retrouver le champ photo et son aperçu.
 const champPhoto = document.querySelector("#photo");
 const apercuPhoto = document.querySelector("#apercu-photo");
 
-let adresseApercu = null;
 
+// Garder l’adresse temporaire de l’aperçu.
+let adresseApercu = null;
+// Vérifier la photo et afficher son aperçu.
 champPhoto.addEventListener("change", function () {
-  // Libérer l’ancienne adresse temporaire.
+
   if (adresseApercu) {
     URL.revokeObjectURL(adresseApercu);
     adresseApercu = null;
@@ -188,7 +216,7 @@ champPhoto.addEventListener("change", function () {
     return;
   }
 
-  // Un document ou un autre format ne doit pas créer un aperçu cassé.
+
   if (!["image/jpeg", "image/png"].includes(fichier.type)) {
     messageAjout.textContent = "Choisis une image JPG ou PNG.";
     return;
@@ -198,13 +226,13 @@ champPhoto.addEventListener("change", function () {
     return;
   }
 
-  // Afficher le fichier choisi sans l’envoyer au serveur.
+
   adresseApercu = URL.createObjectURL(fichier);
   apercuPhoto.src = adresseApercu;
   apercuPhoto.hidden = false;
 });
 
-// Envoyer une nouvelle photo, son titre et sa catégorie au serveur.
+// Retrouver les champs du formulaire d’ajout.
 const formulaireAjout = document.querySelector("#form-ajout-photo");
 const titrePhoto = document.querySelector("#titre-photo");
 const categoriePhoto = document.querySelector("#categorie-photo");
@@ -212,7 +240,9 @@ const messageAjout = document.querySelector("#erreur-ajout");
 const boutonValider = formulaireAjout.querySelector('button[type="submit"]');
 let envoiEnCours = false;
 
-// Le bouton devient actif seulement lorsque le formulaire est prêt.
+
+
+// Activer Valider quand le formulaire est complet.
 function actualiserBoutonValider(evenement) {
   const fichier = champPhoto.files[0];
   const photoValide = fichier
@@ -221,8 +251,8 @@ function actualiserBoutonValider(evenement) {
   boutonValider.disabled = envoiEnCours || !photoValide
     || !titrePhoto.value.trim() || !categoriePhoto.value;
 
-  // Expliquer les champs manquants après une interaction avec le formulaire.
-  // Les erreurs de format et de taille restent gérées au choix du fichier.
+
+
   if (evenement && !envoiEnCours && (!fichier || photoValide)) {
     const champsManquants = [];
     if (!fichier) champsManquants.push("une photo");
@@ -239,6 +269,8 @@ formulaireAjout.addEventListener("change", actualiserBoutonValider);
 actualiserBoutonValider();
 
 
+
+// Contrôler les champs avant l’envoi.
 formulaireAjout.addEventListener("submit", async function (evenement) {
   evenement.preventDefault();
   if (boutonValider.disabled) return;
@@ -262,13 +294,12 @@ formulaireAjout.addEventListener("submit", async function (evenement) {
     return;
   }
 
-  // Refuser les images dépassant la limite de la maquette.
   if (fichier.size > 4 * 1024 * 1024) {
     messageAjout.textContent = "Choisis une image de 4 Mo maximum.";
     return;
   }
 
-  // FormData transporte le fichier et les champs ensemble.
+  // Rassembler la photo, le titre et la catégorie.
   const donnees = new FormData();
   donnees.append("image", fichier);
   donnees.append("title", titre);
@@ -280,10 +311,12 @@ formulaireAjout.addEventListener("submit", async function (evenement) {
   boutonValider.textContent = "Envoi en cours…";
 
   try {
+
+    // Envoyer la photo avec le token.
     const reponse = await fetch("http://localhost:5678/api/works", {
       method: "POST",
       headers: { Authorization: "Bearer " + tokenConnexion },
-      // Le navigateur ajoute lui-même le Content-Type de FormData.
+
       body: donnees
     });
 
@@ -294,6 +327,7 @@ formulaireAjout.addEventListener("submit", async function (evenement) {
       throw new Error("Le serveur a refusé l’ajout de la photo.");
     }
 
+    // Vider le formulaire et actualiser les galeries.
     formulaireAjout.reset();
     if (adresseApercu) {
       URL.revokeObjectURL(adresseApercu);
@@ -304,20 +338,23 @@ formulaireAjout.addEventListener("submit", async function (evenement) {
 
     await chargerProjets();
     await chargerPhotosModale();
-    boutonRetour.click();
-    alert("Photo ajoutée avec succès !");
+    if (modale.getAttribute("aria-hidden") === "false") {
+      boutonRetour.click();
+    }
+    afficherMessageGalerie("Photo ajoutée avec succès.", true);
   } catch (erreur) {
     messageAjout.textContent = erreur instanceof TypeError
       ? "Impossible de contacter le serveur. Vérifie que le serveur est démarré."
       : erreur.message;
   } finally {
+
     envoiEnCours = false;
     actualiserBoutonValider();
     boutonValider.textContent = texteBouton;
   }
 });
 
-// Garder la navigation avec Tab dans la modale.
+// Garder la navigation au clavier dans la modale.
 document.addEventListener("keydown", function (evenement) {
   if (
     evenement.key !== "Tab" ||
@@ -333,7 +370,6 @@ document.addEventListener("keydown", function (evenement) {
       && element.getClientRects().length > 0;
   });
 
-  // Chaque appui déplace explicitement le focus dans la fenêtre.
   evenement.preventDefault();
   if (elements.length === 0) return;
 

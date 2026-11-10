@@ -1,9 +1,11 @@
+// Retrouver le formulaire et les champs.
 const formulaire = document.querySelector("#login-form");
 const email = document.querySelector("#email");
 const password = document.querySelector("#password");
 const erreur = document.querySelector("#login-error");
 const boutonConnexion = formulaire.querySelector('input[type="submit"]');
 
+// Traiter la connexion à la validation du formulaire.
 formulaire.addEventListener("submit", async function (evenement) {
   evenement.preventDefault();
   if (boutonConnexion.disabled) return;
@@ -11,6 +13,7 @@ formulaire.addEventListener("submit", async function (evenement) {
   erreur.textContent = "";
 
   try {
+    // Envoyer les identifiants au serveur.
     const reponse = await fetch("http://localhost:5678/api/users/login", {
       method: "POST",
       headers: {
@@ -22,6 +25,7 @@ formulaire.addEventListener("submit", async function (evenement) {
       })
     });
 
+    // Afficher une erreur si la connexion est refusée.
     if (!reponse.ok) {
       erreur.textContent = [401, 404].includes(reponse.status)
         ? "E-mail ou mot de passe incorrect."
@@ -29,19 +33,19 @@ formulaire.addEventListener("submit", async function (evenement) {
       return;
     }
 
-    // Lire les informations renvoyées par le serveur.
+    // Lire les données reçues du serveur.
     const donnees = await reponse.json();
 
-    // Vérifier que le serveur a bien fourni une preuve de connexion.
+    // Vérifier le token reçu.
     if (typeof donnees.token !== "string" || !donnees.token.trim()) {
       erreur.textContent = "La réponse du serveur ne contient pas de token valide.";
       return;
     }
 
-    // Conserver le token dans cet onglet pour les autres pages.
+    // Garder le token pour la session de cet onglet.
     sessionStorage.setItem("token", donnees.token);
 
-    // Revenir à la page des projets après la connexion.
+    // Revenir à la page des projets.
     window.location.href = "index.html";
   } catch (probleme) {
     erreur.textContent = "Impossible de contacter le serveur.";
@@ -49,4 +53,3 @@ formulaire.addEventListener("submit", async function (evenement) {
     boutonConnexion.disabled = false;
   }
 });
-
